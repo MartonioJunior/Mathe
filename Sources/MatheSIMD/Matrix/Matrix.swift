@@ -163,7 +163,7 @@ extension Matrix: CustomStringConvertible {
 extension Matrix: Decodable where Element: Decodable {
     public init(from decoder: any Decoder) throws {
         var container = try decoder.unkeyedContainer()
-        spaces = try .init { _ in try container.decode(Vector<Columns, Element>.self)  }
+        spaces = try .init { _ in try container.decode(Vector<Columns, Element>.self) }
     }
 }
 

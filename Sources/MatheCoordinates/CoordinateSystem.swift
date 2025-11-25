@@ -1,5 +1,5 @@
 //
-//  CoordinatSystem.swift
+//  CoordinateSystem.swift
 //  Trinkets
 //
 //  Created by Martônio Júnior on 12/07/2025.
