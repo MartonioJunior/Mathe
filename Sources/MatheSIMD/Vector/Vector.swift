@@ -245,6 +245,12 @@ public extension Vector where Scalar: AdditiveArithmetic {
 @available(macOS 26.0, *)
 public extension Vector where Scalar: ExpressibleByIntegerLiteral {
     static var one: Self { .repeating(1) }
+
+    static func e(_ keyPath: WritableKeyPath<Self, Scalar>) -> Self {
+        var x = Self.repeating(0)
+        x[keyPath: keyPath] = 1
+        return x
+    }
 }
 
 // MARK: Scalar: FloatingPoint
