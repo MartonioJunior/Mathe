@@ -224,3 +224,9 @@ extension Matrix: SIMDStorage where Element: AdditiveArithmetic & Codable & Hash
         self = .repeating(.zero)
     }
 }
+
+// MARK: Self.Value: ExpressibleByIntegerLiteral
+@available(macOS 26.0.0, *)
+extension Matrix where Scalar: ExpressibleByIntegerLiteral {
+    static var identity: Self { .init { $0.column == $0.row ? 1 : 0 } }
+}
