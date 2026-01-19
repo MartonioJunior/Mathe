@@ -20,6 +20,10 @@ public extension Gamut where Bound: Comparable {
     func clamp(_ value: Bound) -> Bound {
         floor(ceil(value))
     }
+
+    func clamped(to limits: Self) -> Self {
+        .init(from: max(lowerBound, limits.lowerBound), to: min(upperBound, limits.upperBound))
+    }
 }
 
 // MARK: Self: Comparable, Self.Bound: Strideable
