@@ -12,6 +12,7 @@ public protocol Gamut: Floor, Ceiling {
 // MARK: Self.Bound: AdditiveArithmetic
 public extension Gamut where Bound: AdditiveArithmetic {
     var distance: Bound { upperBound - lowerBound }
+    var sum: Bound { upperBound + lowerBound }
 }
 
 // MARK: Self.Bound: Comparable
