@@ -9,6 +9,13 @@ public protocol Gamut: Floor, Ceiling {
     init(from lowerBound: Bound, to upperBound: Bound)
 }
 
+// MARK: Default Implementation
+public extension Gamut {
+    static func point(_ value: Bound) -> Self {
+        .init(from: value, to: value)
+    }
+}
+
 // MARK: Self.Bound: AdditiveArithmetic
 public extension Gamut where Bound: AdditiveArithmetic {
     var distance: Bound { upperBound - lowerBound }
