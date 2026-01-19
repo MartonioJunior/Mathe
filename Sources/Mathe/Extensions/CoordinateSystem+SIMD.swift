@@ -44,6 +44,9 @@ public extension CoordinateSystem where Self == GeographicCoordinate {
 }
 
 // MARK: Homogeneous Coordinate
+@available(macOS 26.0, *)
+public typealias Quaternion<let N: Int> = HomogeneousCoordinate<Vector<N, Double>>
+
 public extension CoordinateSystem {
     @available(macOS 26.0, *)
     static func homogeneous(_ vector: Vector4) -> Self where Self == HomogeneousCoordinate<Vector3> {

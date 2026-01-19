@@ -209,8 +209,6 @@ public extension Vector where N == 3 {
 public typealias Vector4 = Vector<4, Double>
 @available(macOS 26.0, *)
 public typealias Vector4Int = Vector<4, Int>
-@available(macOS 26.0, *)
-public typealias Quaternion<T> = Vector<4, T>
 
 @available(macOS 26.0, *)
 public extension Vector where N == 4 {
