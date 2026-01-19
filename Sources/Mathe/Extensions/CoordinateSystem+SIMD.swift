@@ -72,4 +72,6 @@ public extension CoordinateSystem where Self == SphericalCoordinate {
 
 // MARK: Vector (EX)
 @available(macOS 26.0, *)
-extension Vector: CoordinateSystem {}
+extension Vector: CoordinateSystem {
+    public var components: [Scalar] { map(\.self) }
+}
