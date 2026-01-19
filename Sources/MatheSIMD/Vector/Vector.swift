@@ -36,6 +36,11 @@ public struct Vector<let N: Int, Scalar> {
             }
         }
     }
+
+    // MARK: Methods
+    public func map<T>(_ transform: (Scalar) -> T) -> Vector<N, T> {
+        .init { transform(elements[$0]) }
+    }
 }
 
 // MARK: DotSyntax
