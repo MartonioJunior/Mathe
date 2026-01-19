@@ -26,6 +26,7 @@ public func extract<Element, let A: Int, T>(_ element: Element, features: [A of 
 // MARK: Sequence (EX)
 @available(macOS 26.0, *)
 public extension Sequence {
+    @_disfavoredOverload
     subscript<let A: Int>(_ swizzle: [A of (Self) -> Element]) -> [A of Element] {
         extract(self, features: swizzle)
     }
