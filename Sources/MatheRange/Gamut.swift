@@ -14,6 +14,18 @@ public extension Gamut {
     static func point(_ value: Bound) -> Self {
         .init(from: value, to: value)
     }
+
+    func isInside<B: Boundary>(_ boundary: B) -> Bool where Bound == B.Bound {
+        boundary.contains(lowerBound) && boundary.contains(upperBound)
+    }
+
+    func isOutside<B: Boundary>(_ boundary: B) -> Bool where Bound == B.Bound {
+        boundary.isAbove(self) || boundary.isBelow(self)
+    }
+
+    func overlaps<B: Boundary>(_ boundary: B) -> Bool where Bound == B.Bound {
+        !isOutside(boundary)
+    }
 }
 
 // MARK: Self.Bound: AdditiveArithmetic
