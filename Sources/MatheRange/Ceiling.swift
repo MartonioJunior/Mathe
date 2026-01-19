@@ -22,6 +22,13 @@ public extension Ceiling where Bound: Comparable {
     }
 }
 
+// MARK: Boundary (EX)
+public extension Boundary {
+    func isAbove<C: Ceiling>(_ ceiling: C) -> Bool where Bound == C.Bound {
+        !contains(ceiling.upperBound)
+    }
+}
+
 // MARK: PartialRangeThrough (EX)
 extension PartialRangeThrough: Ceiling {}
 
