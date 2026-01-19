@@ -43,9 +43,13 @@ public extension Pointwise {
 
 // MARK: Scalar: AdditiveArithmetic
 public extension Pointwise where Scalar: AdditiveArithmetic {
+    @_disfavoredOverload
     static func + (lhs: Self, rhs: Scalar) -> Self { lhs.pointwise(scalar: rhs, merge: +)}
+    @_disfavoredOverload
     static func .+ (lhs: Self, rhs: Self) -> Self { lhs.pointwise(rhs, merge: +) }
+    @_disfavoredOverload
     static func - (lhs: Self, rhs: Scalar) -> Self { lhs.pointwise(scalar: rhs, merge: -)}
+    @_disfavoredOverload
     static func .- (lhs: Self, rhs: Self) -> Self { lhs.pointwise(rhs, merge: -) }
 }
 
@@ -53,12 +57,16 @@ public extension Pointwise where Scalar: AdditiveArithmetic {
 public extension Pointwise where Scalar: Numeric {
     func dot(_ rhs: Self) -> Scalar { pointwise(rhs, merge: *).reduce(1, +) }
 
+    @_disfavoredOverload
     static func * (lhs: Self, rhs: Scalar) -> Self { lhs.pointwise(scalar: rhs, merge: *)}
+    @_disfavoredOverload
     static func .* (lhs: Self, rhs: Self) -> Self { lhs.pointwise(rhs, merge: *) }
 }
 
 // MARK: Scalar: FloatingPoint
 public extension Pointwise where Scalar: FloatingPoint {
+    @_disfavoredOverload
     static func / (lhs: Self, rhs: Scalar) -> Self { lhs.pointwise(scalar: rhs, merge: /)}
+    @_disfavoredOverload
     static func ./ (lhs: Self, rhs: Self) -> Self { lhs.pointwise(rhs, merge: /) }
 }
