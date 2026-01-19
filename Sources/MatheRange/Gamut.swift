@@ -71,6 +71,13 @@ public extension Gamut where Bound: SignedNumeric & Comparable {
     var magnitude: Bound { abs(distance) }
 }
 
+// MARK: Boundary (EX)
+public extension Boundary {
+    func envelops<G: Gamut>(_ gamut: G) -> Bool where Bound == G.Bound {
+        gamut.isInside(self)
+    }
+}
+
 // MARK: ClosedRange (EX)
 extension ClosedRange: Gamut {
     public init(from lowerBound: Bound, to upperBound: Bound) {
