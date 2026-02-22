@@ -15,7 +15,7 @@ extension HomogeneousCoordinate: CoordinateSystem {}
 
 // MARK: CoordinateSystem (EX)
 public extension CoordinateSystem {
-    static func homogeneous<Base>(_ base: Base, w: Double) -> Self where Self == HomogeneousCoordinate<Base> {
+    static func homogeneous<Base>(_ base: Base, w: Double = 1) -> Self where Self == HomogeneousCoordinate<Base> {
         .init(base: base, w: w)
     }
 }
