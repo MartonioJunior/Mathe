@@ -45,7 +45,7 @@ public extension Gamut where Bound: Comparable {
     }
 
     func merge(with other: Self) -> Self {
-        .init(from: min(lowerBound, limits.lowerBound), to: max(upperBound, limits.upperBound))
+        .init(from: min(lowerBound, other.lowerBound), to: max(upperBound, other.upperBound))
     }
 }
 
