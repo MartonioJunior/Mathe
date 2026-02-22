@@ -58,10 +58,10 @@ extension Vector: Gamut where Scalar: Gamut {
     public func subregion(
         for point: Vector<N, Scalar.Bound>
     ) -> Self where Scalar.Bound == Double {
-        let sum = map(\.sum)
+        let sumValues = map { $0.sum }
         let half = 0.5
-        let multipliersFrom: Vector<N, Scalar.Bound> = .init { sum[$0] >= point[$0] ? half : 0 }
+        let multipliersFrom: Vector<N, Scalar.Bound> = .init { sumValues[$0] >= point[$0] ? half : 0 }
         let multipliersTo: Vector<N, Scalar.Bound> = .init { multipliersFrom[$0] + half }
-        return Vector(from: lowerBound + multipliersFrom * sum, to: lowerBound + multipliersTo * sum)
+        return Vector(from: lowerBound + multipliersFrom * sumValues, to: lowerBound + multipliersTo * sumValues)
     }
 }
