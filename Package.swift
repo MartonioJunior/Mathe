@@ -52,14 +52,14 @@ let graphs = targetDep(name: "Graphs", package: "swift-graphs")
 let dependencies = [
     dep(url: "https://github.com/pointfreeco/swift-nonempty", .upToNextMajor(from: "0.5.0")),
     dep(url: "https://github.com/apple/swift-numerics", .upToNextMajor(from: "1.1.0")),
-    dep(url: "https://github.com/tevelee/swift-graphs", .upToNextMajor(from: "0.0.1"))
+    dep(url: "https://github.com/tevelee/swift-graphs", .upToNextMajor(from: "0.4.4"))
 ]
 
 // MARK: - Targets
 let targets: [Target] = [
     .target(
         name: "Mathe",
-        dependencies: ["MatheCoordinates", "MatheGraphs", "MatheSIMD"],
+        dependencies: ["MatheCoordinates", "MatheGeometry", "MatheGraphs", "MatheRange", "MatheSIMD"],
         swiftSettings: .upcomingFeatures
     ),
     .target(
