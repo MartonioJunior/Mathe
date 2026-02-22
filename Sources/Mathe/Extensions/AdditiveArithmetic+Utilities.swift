@@ -7,6 +7,7 @@
 
 // MARK: Self: Comparable
 public extension AdditiveArithmetic where Self: Comparable {
+    @_disfavoredOverload
     static func gcd(_ lhs: Self, _ rhs: Self) -> Self {
         if lhs == .zero || rhs == .zero { return .zero }
 
