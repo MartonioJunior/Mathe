@@ -24,10 +24,10 @@ public struct MatrixIndex<let N: Int> {
 // MARK: N == 2
 @available(macOS 26, *)
 public extension MatrixIndex where N == 2 {
-    public var column: Int { elements[1] }
-    public var row: Int { elements[0] }
+    var column: Int { elements[1] }
+    var row: Int { elements[0] }
 
-    public init(r: Int, c: Int) {
+    init(r: Int, c: Int) {
         self.elements = [r, c]
     }
 }

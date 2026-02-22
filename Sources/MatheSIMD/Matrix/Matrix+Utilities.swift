@@ -77,7 +77,7 @@ public extension Matrix where Rows == 4, Columns == 4, Element: Numeric {
 // MARK: Self.Element: AdditiveArithmetic
 @available(macOS 26.0, *)
 public extension Matrix where Element: AdditiveArithmetic {
-    public init(sequence elements: [Element]) {
+    init(sequence elements: [Element]) {
         self.init(sequence: elements, default: .zero)
     }
 }
