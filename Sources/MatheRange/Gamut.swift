@@ -43,6 +43,10 @@ public extension Gamut where Bound: Comparable {
     func clamped(to limits: Self) -> Self {
         .init(from: max(lowerBound, limits.lowerBound), to: min(upperBound, limits.upperBound))
     }
+
+    func merge(with other: Self) -> Self {
+        .init(from: min(lowerBound, limits.lowerBound), to: max(upperBound, limits.upperBound))
+    }
 }
 
 // MARK: Self: Comparable, Self.Bound: Strideable
@@ -69,6 +73,17 @@ public extension Gamut where Bound: Equatable {
 // MARK: Self.Bound: SignedNumeric
 public extension Gamut where Bound: SignedNumeric & Comparable {
     var magnitude: Bound { abs(distance) }
+}
+
+// MARK: Self.Bound: Strideable
+public extension Gamut where Bound: Strideable {
+    func adjacent(to other: Self) -> Bool {
+        other ~= lowerBound.advanced(by: -1) || other ~= upperBound.advanced(by: 1)
+    }
+
+    func overlapsOrAdjacent(to other: Self) -> Bool {
+        other.overlaps(Self(from: lowerBound.advanced(by: -1), to: upperBound.advanced(by: 1)))
+    }
 }
 
 // MARK: Boundary (EX)
