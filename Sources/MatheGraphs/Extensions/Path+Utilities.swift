@@ -5,150 +5,148 @@
 //  Created by Martônio Júnior on 10/10/2025.
 //
 
-public import Graphs
 public import NonEmpty
 
 public extension Path {
     var reversed: Self {
-        .init(source: destination, destination: source, edges: edges.map(\.reversed).reversed())
+        .init(source: destination, destination: source, vertices: vertices.reversed(), edges: edges.reversed())
+    }
+    
+    init(vertices: NonEmptyArray<Vertex>, edges: [Edge]) {
+        self.init(source: vertices.first, destination: vertices.last, vertices: vertices.map(\.self), edges: edges)
     }
 
     /// Adds a connection to a new node
-    func connecting(_ nodes: some Sequence<Node>, using edge: Edge) -> Self {
-        var destination = destination
-        var extraEdges = [GraphEdge<Node, Edge>]()
+    func connecting(
+        _ vertices: some Sequence<Vertex>,
+        makeEdge: (Vertex, Vertex) -> Edge
+    ) -> Self {
+        var lastVertex = destination
+        var extraVertices = [Vertex]()
+        var extraEdges = [Edge]()
 
-        for node in nodes {
-            extraEdges.append(GraphEdge(source: destination, destination: node, value: edge))
-            destination = node
+        for vertex in vertices {
+            extraVertices.append(vertex)
+            extraEdges.append(makeEdge(lastVertex, vertex))
+            lastVertex = vertex
         }
 
-        return .init(source: source, destination: destination, edges: edges + extraEdges)
+        return .init(source: source, destination: destination, vertices: vertices + extraVertices, edges: edges + extraEdges)
     }
+
     /// Removes the first node from the collection
     func disconnectingFirst() -> Self? {
-        var edges = edges
+        guard let newSource = vertices.dropFirst().first else { return nil }
 
-        if edges.isEmpty { return nil }
-
-        let removedEdge = edges.removeFirst()
-
-        return .init(source: source, destination: removedEdge.source, edges: edges)
+        return .init(source: newSource, destination: destination, vertices: Array(vertices.dropFirst()), edges: Array(edges.dropFirst()))
     }
+
     /// Removes the end node from the collection
     func disconnectingLast() -> Self? {
-        var edges = edges
+        guard let newDestination = vertices.dropLast().last else { return nil }
 
-        guard let removedEdge = edges.popLast() else { return nil }
-
-        return .init(source: source, destination: removedEdge.source, edges: edges)
-    }
-
-    func allSpacesSatisfy(where predicate: (Node) -> Bool) -> Bool {
-        predicate(source)
-        && edges.allSatisfy { predicate($0.source) && predicate($0.destination) }
-        && predicate(destination)
-    }
-
-    func allEdgesSatisfy(where predicate: (GraphEdge<Node, Edge>) -> Bool) -> Bool {
-        edges.allSatisfy(predicate)
+        return .init(source: source, destination: newDestination, vertices: Array(vertices.dropLast()), edges: Array(edges.dropLast()))
     }
 }
 
 // MARK: DotSyntax
 public extension Path {
     static func closed(
-        _ nodes: NonEmptyArray<Node>,
-        edge: (Node, Node) -> Edge
+        _ nodes: NonEmptyArray<Vertex>,
+        makeEdge: (Vertex, Vertex) -> Edge
     ) -> Self {
-        compose(source: nodes.first, inBetweens: nodes.dropFirst(), destination: nodes.first, edge: edge)
+        compose(source: nodes.first, inBetweens: nodes.dropFirst(), destination: nodes.first, makeEdge: makeEdge)
     }
 
     static func compose(
-        source: Node,
-        inBetweens: some Sequence<Node>,
-        destination: Node,
-        edge: (Node, Node) -> Edge
+        source: Vertex,
+        inBetweens: some Sequence<Vertex>,
+        destination: Vertex,
+        makeEdge: (Vertex, Vertex) -> Edge
     ) -> Self {
-        var edges: [GraphEdge<Node, Edge>] = []
+        var edges: [Edge] = []
+        var vertices: [Vertex] = [source]
+
         var origin = source
+
         for node in inBetweens + [destination] {
-            edges.append(GraphEdge(source: origin, destination: node, value: edge(origin, node)))
+            vertices.append(node)
+            edges.append(makeEdge(origin, node))
             origin = node
         }
 
-        return .init(source: source, destination: destination, edges: edges)
+        return .init(source: source, destination: destination, vertices: vertices, edges: edges)
     }
 
-    static func disconnected(source: Node, destination: Node) -> Self {
-        .init(source: source, destination: destination, edges: [])
+    static func disconnected(source: Vertex, destination: Vertex) -> Self {
+        .init(vertices: [source, destination], edges: [])
     }
 
     static func open(
-        _ nodes: NonEmpty<NonEmptyArray<Node>>,
-        edge: (Node, Node) -> Edge
+        _ nodes: NonEmpty<NonEmptyArray<Vertex>>,
+        makeEdge: (Vertex, Vertex) -> Edge
     ) -> Self {
-        compose(source: nodes.first, inBetweens: nodes.dropLast().dropFirst(), destination: nodes.last, edge: edge)
+        compose(source: nodes.first, inBetweens: nodes.dropLast().dropFirst(), destination: nodes.last, makeEdge: makeEdge)
     }
 
-    static func point(_ node: Node) -> Self {
+    static func point(_ node: Vertex) -> Self {
         .disconnected(source: node, destination: node)
     }
 }
 
-// MARK: Edge == Empty
-public extension Path where Edge == Empty {
-    func connecting(_ nodes: some Sequence<Node>) -> Self {
-        connecting(nodes, using: Empty())
-    }
-}
-
 // MARK: Node: Equatable
-public extension Path where Node: Equatable {
+public extension Path where Vertex: Equatable {
     var isClosed: Bool { source == destination }
 
-    func skip(_ node: Node) -> Self? {
-        switch node {
+    func skip(_ vertex: Vertex) -> Self? {
+        switch vertex {
             case source:
                 return disconnectingFirst()
             case destination:
                 return disconnectingLast()
             default:
+                guard let index = vertices.firstIndex(of: vertex) else { return nil }
+                var vertices = vertices
                 var edges = edges
-                edges.removeAll { $0.source == node || $0.destination == node }
-                return .init(source: source, destination: destination, edges: edges)
+                vertices.remove(at: index)
+                edges.remove(at: index)
+                edges.remove(at: edges.index(before: index))
+                return .init(source: source, destination: destination, vertices: vertices, edges: edges)
         }
     }
 
-    func skipMany(_ nodes: some Sequence<Node>) -> Self? {
+    func skipMany(_ vertex: some Sequence<Vertex>) -> Self? {
         let result: Self? = self
-        return nodes.reduce(result) {
+        return vertex.reduce(result) {
             $0?.skip($1)
         }
     }
 }
 
 // MARK: Self.Node: Hashable
-public extension Path where Node: Hashable, Edge == Empty {
+public extension Path where Vertex: Hashable {
     static func reconstructedBackwards(
-        _ searchTable: [Node: Node],
-        from start: Node,
-        to destination: Node
+        _ searchTable: [Vertex: Vertex],
+        from start: Vertex,
+        to destination: Vertex,
+        makeEdge: (Vertex, Vertex) -> Edge
     ) -> Self? {
         guard searchTable.keys.contains(destination) else { return nil }
 
-        var edges: [GraphEdge<Node, Edge>] = []
+        var edges: [Edge] = []
+        var vertices: [Vertex] = [destination]
         var current = destination
 
         while current != start {
             guard let previous = searchTable[current] else { return nil }
 
-            edges.append(GraphEdge(source: current, destination: previous))
+            edges.append(makeEdge(current, previous))
+            vertices.append(previous)
 
             current = previous
         }
 
-        return .init(source: start, destination: destination, edges: edges)
+        return .init(source: start, destination: destination, vertices: vertices, edges: edges)
     }
 }
 
