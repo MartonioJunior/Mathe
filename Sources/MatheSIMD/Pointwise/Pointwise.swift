@@ -20,6 +20,14 @@ public protocol Pointwise {
 public extension Pointwise {
     var scalarIndices: Range<Int> { 0..<scalarCount }
 
+    func all(_ predicate: (Scalar) -> Bool) -> Bool {
+        scalarIndices.allSatisfy { predicate(self[$0]) }
+    }
+
+    func any(_ predicate: (Scalar) -> Bool) -> Bool {
+        scalarIndices.contains { predicate(self[$0]) }
+    }
+
     func callAsFunction(point merge: (Scalar, Scalar) -> Scalar, scalar: Scalar) -> Self {
         pointwise(scalar: scalar, merge: merge)
     }
@@ -61,6 +69,12 @@ public extension Pointwise where Scalar: Numeric {
     static func * (lhs: Self, rhs: Scalar) -> Self { lhs.pointwise(scalar: rhs, merge: *)}
     @_disfavoredOverload
     static func .* (lhs: Self, rhs: Self) -> Self { lhs.pointwise(rhs, merge: *) }
+}
+
+// MARK: Scalar: Equatable
+public extension Pointwise where Scalar: Equatable {
+    func all(_ value: Scalar) -> Bool { scalarIndices.all { $0 == value } }
+    func any(_ value: Scalar) -> Bool { scalarIndices.any { $0 == value } }
 }
 
 // MARK: Scalar: FloatingPoint
