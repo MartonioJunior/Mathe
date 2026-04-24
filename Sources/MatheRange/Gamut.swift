@@ -70,6 +70,28 @@ public extension Gamut where Bound: Equatable {
     var isShortCircuited: Bool { lowerBound == upperBound }
 }
 
+// MARK: Self.Bound: FloatingPoint
+public extension Gamut where Bound: FloatingPoint {
+    func inverseLerp(_ value: Bound) -> Bound {
+        (value - lowerBound) / (upperBound - lowerBound)
+    }
+
+    func remap(_ value: Bound, to newRange: Self) -> Bound {
+        newRange.lerp(t: inverseLerp(value))
+    }
+}
+
+// MARK: Self.Bound: Numeric
+public extension Gamut where Bound: Numeric {
+    func crossFade(by t: Bound) -> Bound {
+        t * upperBound + (1 - t) * lowerBound
+    }
+
+    func lerp(t: Bound) -> Bound {
+        lowerBound + (upperBound - lowerBound) * t
+    }
+}
+
 // MARK: Self.Bound: SignedNumeric
 public extension Gamut where Bound: SignedNumeric & Comparable {
     var magnitude: Bound { abs(distance) }
@@ -83,6 +105,14 @@ public extension Gamut where Bound: Strideable {
 
     func overlapsOrAdjacent(to other: Self) -> Bool {
         other.overlaps(Self(from: lowerBound.advanced(by: -1), to: upperBound.advanced(by: 1)))
+    }
+
+    func strideTo(by jump: Bound.Stride) -> StrideTo<Bound> {
+        stride(from: lowerBound, to: upperBound, by: jump)
+    }
+
+    func strideThrough(by jump: Bound.Stride) -> StrideThrough<Bound> {
+        stride(from: lowerBound, through: upperBound, by: jump)
     }
 }
 
