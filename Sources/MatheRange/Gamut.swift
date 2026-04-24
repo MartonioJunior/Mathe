@@ -73,22 +73,22 @@ public extension Gamut where Bound: Equatable {
 // MARK: Self.Bound: FloatingPoint
 public extension Gamut where Bound: FloatingPoint {
     func inverseLerp(_ value: Bound) -> Bound {
-        (value - lowerBound) / (upperBound - lowerBound)
+        score(value, using: .inverseLinear)
     }
 
     func remap(_ value: Bound, to newRange: Self) -> Bound {
-        newRange.lerp(t: inverseLerp(value))
+        remap(value, to: newRange, using: .init(.inverseLinear, interpolation: .linear))
     }
 }
 
 // MARK: Self.Bound: Numeric
 public extension Gamut where Bound: Numeric {
     func crossFade(by t: Bound) -> Bound {
-        t * upperBound + (1 - t) * lowerBound
+        interpolate(.crossFade, t: t)
     }
 
     func lerp(t: Bound) -> Bound {
-        lowerBound + (upperBound - lowerBound) * t
+        interpolate(.linear, t: t)
     }
 }
 
