@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Graphs
 
 public struct BinarySearch<Element> {
     static func binary(_ array: [Element], range: Range<Int>, for target: (Element) -> ComparisonResult) -> Int? {

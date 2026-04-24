@@ -5,6 +5,7 @@
 //  Created by Martônio Júnior on 06/10/2025.
 //
 
+#if Numerics
 public import Numerics
 
 @available(macOS 26.0.0, *)
@@ -59,3 +60,4 @@ public extension Matrix where Rows == 4, Columns == 4, Element: Real {
         return matrix
     }
 }
+#endif

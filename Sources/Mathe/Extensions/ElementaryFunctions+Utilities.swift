@@ -5,6 +5,7 @@
 //  Created by Martônio Júnior on 16/04/2025.
 //
 
+#if Numerics
 public import Numerics
 
 public extension ElementaryFunctions {
@@ -35,3 +36,4 @@ public extension ElementaryFunctions {
         Self.pow(self, exponent)
     }
 }
+#endif

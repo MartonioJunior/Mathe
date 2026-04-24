@@ -40,14 +40,27 @@ func lib(_ name: String, targets: String...) -> Product {
 func platformDeps(_ platforms: SupportedPlatform...) -> [SupportedPlatform] {
     platforms
 }
-func targetDep(name: String, package: String) -> Target.Dependency {
-    .product(name: name, package: package)
+
+func targetDep(name: String, package: String, condition: TargetDependencyCondition? = nil) -> Target.Dependency {
+    .product(name: name, package: package, condition: condition)
 }
 
+// MARK: - Traits
+var traits: Set<Trait> = [
+    .trait(name: "NonEmpty", description: "Includes PointFree's NonEmpty package"),
+    .trait(name: "Numerics", description: "Includes swift-numerics package"),
+    .trait(name: "Graphs", description: "Includes swift-graph package"),
+    .trait(name: "VectorAliases", description: "Adds easy-to-use aliases for the `Vector` type, inspired by the Unity engine")
+]
+
+traits.insert(
+    .default(enabledTraits: Set(traits.map(\.name)))
+)
+
 // MARK: - Dependencies
-let nonempty = targetDep(name: "NonEmpty", package: "swift-nonempty")
-let numerics = targetDep(name: "Numerics", package: "swift-numerics")
-let graphs = targetDep(name: "Graphs", package: "swift-graphs")
+let nonempty = targetDep(name: "NonEmpty", package: "swift-nonempty", condition: .when(traits: ["NonEmpty"]))
+let numerics = targetDep(name: "Numerics", package: "swift-numerics", condition: .when(traits: ["Numerics"]))
+let graphs = targetDep(name: "Graphs", package: "swift-graphs", condition: .when(traits: ["Graphs"]))
 
 let dependencies = [
     dep(url: "https://github.com/pointfreeco/swift-nonempty", .upToNextMajor(from: "0.5.0")),
@@ -64,7 +77,6 @@ let targets: [Target] = [
     ),
     .target(
         name: "MatheCoordinates",
-        dependencies: [numerics],
         swiftSettings: .upcomingFeatures
     ),
     .target(
@@ -108,6 +120,7 @@ let package = Package(
     name: "Mathe",
     platforms: platforms,
     products: products,
+    traits: traits,
     dependencies: dependencies,
     targets: targets + testTargets,
     swiftLanguageModes: [.v6]

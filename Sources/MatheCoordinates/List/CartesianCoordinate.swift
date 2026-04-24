@@ -7,8 +7,8 @@
 
 public struct CartesianCoordinate {
     // MARK: Variables
-    var x: Value
-    var y: Value
+    public var x: Value
+    public var y: Value
 }
 
 // MARK: Self: CoordinateSystem

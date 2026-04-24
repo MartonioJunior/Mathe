@@ -5,15 +5,10 @@
 //  Created by Martônio Júnior on 10/10/2025.
 //
 
-public import NonEmpty
-
+#if Graphs
 public extension Path {
     var reversed: Self {
         .init(source: destination, destination: source, vertices: vertices.reversed(), edges: edges.reversed())
-    }
-    
-    init(vertices: NonEmptyArray<Vertex>, edges: [Edge]) {
-        self.init(source: vertices.first, destination: vertices.last, vertices: vertices.map(\.self), edges: edges)
     }
 
     /// Adds a connection to a new node
@@ -51,13 +46,6 @@ public extension Path {
 
 // MARK: DotSyntax
 public extension Path {
-    static func closed(
-        _ nodes: NonEmptyArray<Vertex>,
-        makeEdge: (Vertex, Vertex) -> Edge
-    ) -> Self {
-        compose(source: nodes.first, inBetweens: nodes.dropFirst(), destination: nodes.first, makeEdge: makeEdge)
-    }
-
     static func compose(
         source: Vertex,
         inBetweens: some Sequence<Vertex>,
@@ -76,17 +64,6 @@ public extension Path {
         }
 
         return .init(source: source, destination: destination, vertices: vertices, edges: edges)
-    }
-
-    static func disconnected(source: Vertex, destination: Vertex) -> Self {
-        .init(vertices: [source, destination], edges: [])
-    }
-
-    static func open(
-        _ nodes: NonEmpty<NonEmptyArray<Vertex>>,
-        makeEdge: (Vertex, Vertex) -> Edge
-    ) -> Self {
-        compose(source: nodes.first, inBetweens: nodes.dropLast().dropFirst(), destination: nodes.last, makeEdge: makeEdge)
     }
 
     static func point(_ node: Vertex) -> Self {
@@ -168,3 +145,4 @@ public extension Sequence {
         }
     }
 }
+#endif

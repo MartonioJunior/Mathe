@@ -22,7 +22,7 @@ public extension CoordinateSystem {
 // MARK: Cartesian Coordinate
 public extension CoordinateSystem where Self == CartesianCoordinate {
     @available(macOS 26.0, *)
-    static func cartesian(_ vector: Vector2) -> Self {
+    static func cartesian(_ vector: Vector<2, Double>) -> Self {
         .cartesian(x: vector[0], y: vector[1])
     }
 }
@@ -30,7 +30,7 @@ public extension CoordinateSystem where Self == CartesianCoordinate {
 // MARK: Cylindrical Coordinate
 public extension CoordinateSystem where Self == CylindricalCoordinate {
     @available(macOS 26.0, *)
-    static func cylindrical(_ vector: Vector3) -> Self {
+    static func cylindrical(_ vector: Vector<3, Double>) -> Self {
         .cylindrical(r: vector[0], angle: vector[1], h: vector[2])
     }
 }
@@ -38,7 +38,7 @@ public extension CoordinateSystem where Self == CylindricalCoordinate {
 // MARK: Geographic Coordinate
 public extension CoordinateSystem where Self == GeographicCoordinate {
     @available(macOS 26.0, *)
-    static func geographic(_ vector: Vector2) -> Self {
+    static func geographic(_ vector: Vector<2, Double>) -> Self {
         .geographic(lat: vector[0], lng: vector[1])
     }
 }
@@ -49,7 +49,7 @@ public typealias Quaternion<let N: Int> = HomogeneousCoordinate<Vector<N, Double
 
 public extension CoordinateSystem {
     @available(macOS 26.0, *)
-    static func homogeneous(_ vector: Vector4) -> Self where Self == HomogeneousCoordinate<Vector3> {
+    static func homogeneous(_ vector: Vector<4, Double>) -> Self where Self == HomogeneousCoordinate<Vector<3, Double>> {
         .homogeneous([vector[0], vector[1], vector[2]], w: vector[3])
     }
 }
@@ -57,7 +57,7 @@ public extension CoordinateSystem {
 // MARK: Polar Coordinate
 public extension CoordinateSystem where Self == PolarCoordinate {
     @available(macOS 26.0, *)
-    static func polar(_ vector: Vector2) -> Self {
+    static func polar(_ vector: Vector<2, Double>) -> Self {
         .polar(r: vector[0], a: vector[1])
     }
 }
@@ -65,7 +65,7 @@ public extension CoordinateSystem where Self == PolarCoordinate {
 // MARK: Spherical Coordinate
 public extension CoordinateSystem where Self == SphericalCoordinate {
     @available(macOS 26.0, *)
-    static func spherical(_ vector: Vector3) -> Self {
+    static func spherical(_ vector: Vector<3, Double>) -> Self {
         .spherical(r: vector[0], theta: vector[1], phi: vector[2])
     }
 }

@@ -5,8 +5,6 @@
 //  Created by Martônio Júnior on 12/07/2025.
 //
 
-public import Numerics
-
 @available(macOS 26.0, *)
 public struct Vector<let N: Int, Scalar> {
     // MARK: Variables
@@ -154,10 +152,12 @@ public extension Vector where N == 1 {
 }
 
 // MARK: Self.N == 2
+#if VectorAliases
 @available(macOS 26.0, *)
 public typealias Vector2 = Vector<2, Double>
 @available(macOS 26.0, *)
 public typealias Vector2Int = Vector<2, Int>
+#endif
 
 @available(macOS 26.0, *)
 public extension Vector where N == 2 {
@@ -173,10 +173,12 @@ public extension Vector where N == 2 {
 }
 
 // MARK: Self.N == 3
+#if VectorAliases
 @available(macOS 26.0, *)
 public typealias Vector3 = Vector<3, Double>
 @available(macOS 26.0, *)
 public typealias Vector3Int = Vector<3, Int>
+#endif
 
 @available(macOS 26.0, *)
 public extension Vector where N == 3 {
@@ -205,10 +207,12 @@ public extension Vector where N == 3 {
 }
 
 // MARK: Self.N == 4
+#if VectorAliases
 @available(macOS 26.0, *)
 public typealias Vector4 = Vector<4, Double>
 @available(macOS 26.0, *)
 public typealias Vector4Int = Vector<4, Int>
+#endif
 
 @available(macOS 26.0, *)
 public extension Vector where N == 4 {
@@ -251,33 +255,4 @@ public extension Vector where Scalar: ExpressibleByIntegerLiteral {
         x[keyPath: keyPath] = 1
         return x
     }
-}
-
-// MARK: Scalar: FloatingPoint
-@available(macOS 26.0, *)
-public extension Vector where Scalar: FloatingPoint & ElementaryFunctions {
-    static func / (lhs: Self, rhs: Scalar) -> Self {
-        Self { rhs == 0 ? .nan : lhs[$0] / rhs }
-    }
-
-    var normalized: Self {
-        let magnitude = self.magnitude
-        return if magnitude != 0 {
-            self / magnitude
-        } else {
-            self
-        }
-    }
-
-    func othorgonalProjection(on vector: Self) -> Scalar {
-        let m = magnitude
-        let distance = (dot(vector) / (m * vector.magnitude)) * m
-        return distance.isNaN ? 0 : distance
-    }
-}
-
-// MARK: Self.Scalar: Numeric
-@available(macOS 26.0, *)
-public extension Vector where Scalar: Numeric & Comparable & ElementaryFunctions {
-    var magnitude: Scalar { Scalar.root(dot(self), 2) }
 }

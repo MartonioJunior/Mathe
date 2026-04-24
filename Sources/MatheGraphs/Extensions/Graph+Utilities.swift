@@ -5,6 +5,7 @@
 //  Created by Martônio Júnior on 22/02/26.
 //
 
+#if Graphs
 public extension EdgeMutableGraph {
     /// Adds a connection to a new node
     mutating func connect(
@@ -29,3 +30,4 @@ public extension EdgeMutablePropertyGraph {
         }
     }
 }
+#endif
