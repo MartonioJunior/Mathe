@@ -76,6 +76,11 @@ let targets: [Target] = [
         swiftSettings: .upcomingFeatures
     ),
     .target(
+        name: "MatheAlgebra",
+        dependencies: ["MatheRange", "MatheSIMD", numerics],
+        swiftSettings: .upcomingFeatures
+    ),
+    .target(
         name: "MatheCoordinates",
         dependencies: ["MatheRange", "MatheSIMD"],
         swiftSettings: .upcomingFeatures
@@ -109,7 +114,7 @@ let testTargets: [Target] = targets.map { t in
 let products: [Product] = [
     .library(
         name: "Mathe",
-        targets: ["Mathe", "MatheCoordinates", "MatheGeometry", "MatheGraphs", "MatheRange", "MatheSIMD"]
+        targets: ["Mathe", "MatheAlgebra", "MatheCoordinates", "MatheGeometry", "MatheGraphs", "MatheRange", "MatheSIMD"]
     )
 ]
 
