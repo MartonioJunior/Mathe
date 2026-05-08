@@ -5,17 +5,27 @@
 //  Created by Martônio Júnior on 10/10/2025.
 //
 
+/// Coordinate that defines a location in the real world
 public struct GeographicCoordinate {
-    var latitude: Value
-    var longitude: Value
+    var latitude: Scalar
+    var longitude: Scalar
 }
 
 // MARK: Self: CoordinateSystem
-extension GeographicCoordinate: CoordinateSystem {}
+extension GeographicCoordinate: CoordinateSystem {
+    // swiftlint:disable:next missing_docs
+    public typealias Scalar = Double
+}
 
 // MARK: CoordinateSystem (EX)
 public extension CoordinateSystem where Self == GeographicCoordinate {
-    static func geographic(lat: Value, lng: Value) -> Self {
+    /// Creates a new geographic coordinate
+    /// - Parameters:
+    ///   - lat: Latitude
+    ///   - lng: Longitude
+    ///
+    /// - Returns: A new `GeographicCoordinate` instance
+    static func geographic(lat: Scalar, lng: Scalar) -> Self {
         .init(latitude: lat, longitude: lng)
     }
 }
