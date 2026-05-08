@@ -77,6 +77,7 @@ let targets: [Target] = [
     ),
     .target(
         name: "MatheCoordinates",
+        dependencies: ["MatheRange", "MatheSIMD"],
         swiftSettings: .upcomingFeatures
     ),
     .target(
