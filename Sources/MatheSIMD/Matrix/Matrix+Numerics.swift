@@ -9,54 +9,123 @@
 public import Numerics
 
 @available(macOS 26.0.0, *)
-public extension Matrix where Rows == 4, Columns == 4, Element: Real {
-    mutating func rotate(x angle: Element) -> Self {
-        var matrix = self
-        let cosAngle = Element.cos(angle)
-        let sinAngle = Element.sin(angle)
-        matrix[5] = cosAngle
-        matrix[6] = -sinAngle
-        matrix[9] = sinAngle
-        matrix[10] = cosAngle
+public extension Matrix where Scalar: Numeric & ElementaryFunctions & AlgebraicField {
+    /// Unsigned determinant of a matrix.
+    /// 
+    /// Works as a replacement for the traditional determinant in cases where the matrix isn't square.
+    var unsignedDeterminant: Scalar {
+        .sqrt((self * transposed).determinant)
+    }
+}
+
+@available(macOS 26.0.0, *)
+public extension Matrix where Rows == Columns, Scalar: Numeric & ElementaryFunctions & AlgebraicField {
+    /// Determinant of a matrix.
+    @_disfavoredOverload var determinant: Scalar {
+        let length = Rows
+        var det: Scalar = 1
+        var total: Scalar = 1
+        var temp: [Scalar] = []
+        var copy = self
+
+        for i in 0..<length {
+            guard let nonZeroIndex = self[r: i].firstIndex(where: { $0 != .zero }) else {
+                continue
+            }
+
+            if nonZeroIndex != i {
+                for j in 0..<length {
+                    let temp = copy[r: nonZeroIndex, c: j]
+                    copy[r: nonZeroIndex, c: j] = copy[r: j, c: i]
+                    copy[r: j, c: i] = temp
+                }
+
+                det *= .pow(-1, nonZeroIndex - i)
+            }
+
+            temp = (0..<length).map { copy[r: $0, c: i] }
+
+            for j in (i + 1)..<length {
+                let diagonalElement = temp[i]
+                let nextRowElement = copy[r: i, c: j]
+
+                for k in 0..<length {
+                    copy[r: k, c: j] = diagonalElement * copy[r: k, c: j] - nextRowElement * temp[k]
+                }
+
+                total *= diagonalElement
+            }
+        }
+
+        for i in 0..<length {
+            det *= copy[r: i, c: i]
+        }
+
+        return det / total
+    }
+}
+
+@available(macOS 26.0.0, *)
+public extension Matrix where Rows == 4, Columns == 4, Scalar: Real {
+    /// Creates a rotation matrix that represents a rotation in the X axis.
+    /// - Parameter angle: Angle of the rotation.
+    /// - Returns: A new rotation matrix.
+    static func rotationMatrix(x angle: Scalar) -> Self {
+        var matrix = identity
+        let cosAngle = Scalar.cos(angle)
+        let sinAngle = Scalar.sin(angle)
+        matrix[r: 1, c: 1] = cosAngle
+        matrix[r: 1, c: 2] = -sinAngle
+        matrix[r: 2, c: 1] = sinAngle
+        matrix[r: 2, c: 2] = cosAngle
         return matrix
     }
-
-    mutating func rotate(y angle: Element) -> Self {
-        var matrix = self
-        let cosAngle = Element.cos(angle)
-        let sinAngle = Element.sin(angle)
-        matrix[0] = cosAngle
-        matrix[2] = sinAngle
-        matrix[8] = -sinAngle
-        matrix[10] = cosAngle
+    /// Creates a rotation matrix that represents a rotation in the Y axis.
+    /// - Parameter angle: Angle of the rotation.
+    /// - Returns: A new rotation matrix.
+    static func rotationMatrix(y angle: Scalar) -> Self {
+        var matrix = identity
+        let cosAngle = Scalar.cos(angle)
+        let sinAngle = Scalar.sin(angle)
+        matrix[r: 0, c: 0] = cosAngle
+        matrix[r: 0, c: 2] = sinAngle
+        matrix[r: 2, c: 0] = -sinAngle
+        matrix[r: 2, c: 2] = cosAngle
         return matrix
     }
-
-    mutating func rotate(z angle: Element) -> Self {
-        var matrix = self
-        let cosAngle = Element.cos(angle)
-        let sinAngle = Element.sin(angle)
-        matrix[0] = cosAngle
-        matrix[1] = -sinAngle
-        matrix[4] = sinAngle
-        matrix[5] = cosAngle
+    /// Creates a rotation matrix that represents a rotation in the Z axis.
+    /// - Parameter angle: Angle of the rotation.
+    /// - Returns: A new rotation matrix.
+    static func rotationMatrix(z angle: Scalar) -> Self {
+        var matrix = identity
+        let cosAngle = Scalar.cos(angle)
+        let sinAngle = Scalar.sin(angle)
+        matrix[r: 0, c: 0] = cosAngle
+        matrix[r: 0, c: 1] = -sinAngle
+        matrix[r: 1, c: 0] = sinAngle
+        matrix[r: 1, c: 1] = cosAngle
         return matrix
     }
-
-    mutating func rotateOnAxis(_ vector: Vector<3, Element>, angle: Element) -> Self {
-        var matrix = self
-        let cosAngle = Element.cos(angle)
-        let sinAngle = Element.sin(angle)
+    /// Creates a rotation matrix that represents a rotation in any given axis.
+    /// - Parameters:
+    ///   - vector: Axis of rotation.
+    ///   - angle: Angle of th rotation.
+    ///
+    /// - Returns: A new rotation matrix.
+    static func rotatedOnAxis(_ axis: Vector<3, Scalar>, angle: Scalar) -> Self {
+        var matrix = identity
+        let cosAngle = Scalar.cos(angle)
+        let sinAngle = Scalar.sin(angle)
         let oneMinusCos = 1 - cosAngle
-        matrix[0] = cosAngle + vector.x * vector.x * oneMinusCos
-        matrix[1] = vector.x * vector.y * oneMinusCos - vector.z * sinAngle
-        matrix[2] = vector.x * vector.z * oneMinusCos + vector.y * sinAngle
-        matrix[4] = vector.y * vector.x * oneMinusCos + vector.z * sinAngle
-        matrix[5] = cosAngle + vector.y * vector.y * oneMinusCos
-        matrix[6] = vector.y * vector.z * oneMinusCos - vector.x * sinAngle
-        matrix[8] = vector.z * vector.x * oneMinusCos - vector.y * sinAngle
-        matrix[9] = vector.z * vector.y * oneMinusCos + vector.x * sinAngle
-        matrix[10] = cosAngle + vector.z * vector.z * oneMinusCos
+        matrix[r: 0, c: 0] = cosAngle + axis.x * axis.x * oneMinusCos
+        matrix[r: 0, c: 1] = axis.x * axis.y * oneMinusCos - axis.z * sinAngle
+        matrix[r: 0, c: 2] = axis.x * axis.z * oneMinusCos + axis.y * sinAngle
+        matrix[r: 1, c: 0] = axis.y * axis.x * oneMinusCos + axis.z * sinAngle
+        matrix[r: 1, c: 1] = cosAngle + axis.y * axis.y * oneMinusCos
+        matrix[r: 1, c: 2] = axis.y * axis.z * oneMinusCos - axis.x * sinAngle
+        matrix[r: 2, c: 0] = axis.z * axis.x * oneMinusCos - axis.y * sinAngle
+        matrix[r: 2, c: 1] = axis.z * axis.y * oneMinusCos + axis.x * sinAngle
+        matrix[r: 2, c: 2] = cosAngle + axis.z * axis.z * oneMinusCos
         return matrix
     }
 }
