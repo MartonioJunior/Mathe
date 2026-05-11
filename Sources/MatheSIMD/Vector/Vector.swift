@@ -5,26 +5,37 @@
 //  Created by Martônio Júnior on 12/07/2025.
 //
 
+/// Fixed-size linear collection of scalar values.
 @available(macOS 26.0, *)
 public struct Vector<let N: Int, Scalar> {
     // MARK: Variables
+    /// List of components for the vector.
     var elements: [N of Scalar]
-
     // MARK: Subscripts
+    /// Vector component from the specified index.
+    /// - Parameter index: Index for the component.
+    /// - Returns: The scalar at the given index.
     public subscript(_ index: Int) -> Scalar {
         get { elements[index] }
         set { elements[index] = newValue }
     }
-
     // MARK: Initializers
+    /// Creates a new vector from an `InlineArray`.
+    /// - Parameter elements: Inline array of components.
     public init(_ elements: [N of Scalar]) {
         self.elements = elements
     }
-
-    public init(_ body: (Int) throws -> Scalar) rethrows {
+    /// Creates a new vector from a index-to-scalar map.
+    /// - Parameter body: Index-to-scalar transformation function.
+    /// - Throws: Error `E` when the transformation encounters a problem.
+    public init<E: Error>(_ body: (Int) throws(E) -> Scalar) rethrows {
         self.elements = try InlineArray(body)
     }
-
+    /// Creates a new vector from an existing array of values.
+    /// - Parameters:
+    ///   - sequence: Array of values.
+    ///   - default: Fallback value for when an scalar index is not part of the given sequence.
+    ///
     public init(sequence: [Scalar], default: Scalar) {
         self.init {
             if sequence.indices.contains($0) {
@@ -34,65 +45,65 @@ public struct Vector<let N: Int, Scalar> {
             }
         }
     }
-
     // MARK: Methods
-    public func map<T>(_ transform: (Scalar) -> T) -> Vector<N, T> {
-        .init { transform(elements[$0]) }
+    /// Creates a new vector by transforming it's components.
+    /// - Parameter transform: Transformation function.
+    /// - Returns: A new vector of the same size with the transformed scalar components.
+    /// - Throws: Error `E` when the transformation encounters a problem.
+    public func map<T, E: Error>(_ transform: (Scalar) throws(E) -> T) rethrows -> Vector<N, T> {
+        try .init { try transform(elements[$0]) }
+    }
+    /// Applies a boolean mask to the vector components.
+    /// 
+    /// `true` maintains the component as is, while `false` replaces it with a fallback value.
+    /// - Parameters:
+    ///   - mask: Boolean mask vector.
+    ///   - fallback: Value used as a replacement.
+    ///
+    /// - Returns: A new vector with the masked and replaced components.
+    public func masked(by mask: Vector<N, Bool>, fallback: Scalar) -> Self {
+        .init { mask[$0] ? self[$0] : fallback }
     }
 }
 
 // MARK: DotSyntax
 @available(macOS 26.0, *)
 public extension Vector {
+    /// Creates a new basis vector.
+    /// - Parameters:
+    ///   - index: Relevant index of the basis.
+    ///   - value: Scalar to be used for the relevant index.
+    ///   - fallback: Scalar to be used for all other indices.
+    ///
+    /// - Returns: A new basis vector with `value` in it's most relevant index and `fallback` everywhere else.
+    static func basis(_ index: Int, value: Scalar, fallback: Scalar) -> Self {
+        .init { $0 == index ? value : fallback }
+    }
+    /// Creates a vector that repeats a value for all it's components.
+    /// - Parameter value: Value to be repeated.
+    /// - Returns: A new vector with all components as `value`.
     static func repeating(_ value: @autoclosure () -> Scalar) -> Self {
         .init { _ in value() }
     }
-
+    /// Creates a "matrix" composition with an inline array nested in another.
+    /// 
+    /// This is meant as an input for a matrix initializer.
+    /// - Parameter matrix: Nested inline array.
+    /// - Returns: Vector where the component is another vector.
     static func matrix<let A: Int, T>(_ matrix: [N of [A of T]]) -> Self where Scalar == Vector<A, T> {
         .init { .init(matrix[$0]) }
     }
-
+    /// Creates a "matrix" composition with an inline array of vectors.
+    /// - Parameter matrix: Inline array of vectors.
+    /// - Returns: Vector where the component is another vector.
     static func matrix<let A: Int, T>(_ matrix: [N of Vector<A, T>]) -> Self where Scalar == Vector<A, T> {
         .init { matrix[$0] }
     }
-
+    /// Creates a "matrix" composition with a index-to-scalar map.
+    /// - Parameter map: Transformation function (first value is index, second value is subindex).
+    /// - Returns: Vector where the component is another vector.
     static func matrix<let A: Int, T>(_ map: (Int, Int) -> T) -> Self where Scalar == Vector<A, T> {
         .init { index in .init { subindex in map(index, subindex) } }
-    }
-}
-
-// MARK: Self: Collection
-@available(macOS 26.0, *)
-extension Vector: Collection {
-    public var startIndex: Int { 0 }
-    public var endIndex: Int { N }
-
-    public func index(after i: Int) -> Int { i + 1 }
-}
-
-// MARK: Self: CustomStringConvertible
-@available(macOS 26.0, *)
-extension Vector: CustomStringConvertible {
-    public var description: String {
-        "(" + elements.flexible.map { "\($0)" }.joined(separator: ", ") + ")"
-    }
-}
-
-// MARK: Self: Decodable
-@available(macOS 26.0, *)
-extension Vector: Decodable where Scalar: Decodable {
-    public init(from decoder: any Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-        elements = try .init { _ in try container.decode(Scalar.self) }
-    }
-}
-
-// MARK: Self: Encodable
-@available(macOS 26.0, *)
-extension Vector: Encodable where Scalar: Encodable {
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.unkeyedContainer()
-        try elements.forEach { try container.encode($0) }
     }
 }
 
@@ -100,159 +111,6 @@ extension Vector: Encodable where Scalar: Encodable {
 @available(macOS 26.0, *)
 extension Vector: Equatable where Scalar: Equatable {}
 
-// MARK: Self: ExpressibleByArrayLiteral
+// MARK: Self: Sendable
 @available(macOS 26.0, *)
-extension Vector: ExpressibleByArrayLiteral where Scalar: AdditiveArithmetic {
-    public init(arrayLiteral elements: Scalar...) {
-        self.init(sequence: elements, default: .zero)
-    }
-}
-
-// MARK: Self: Hashable
-@available(macOS 26.0, *)
-extension Vector: Hashable where Scalar: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        elements.forEach {
-            hasher.combine($0)
-        }
-    }
-}
-
-// MARK: Self: Pointwise
-@available(macOS 26.0, *)
-extension Vector: Pointwise {
-    public var scalarCount: Int { count }
-
-    public init(scalars: [Scalar]) {
-        self.init { scalars[$0] }
-    }
-}
-
-// MARK: Self: SIMD
-@available(macOS 26.0, *)
-extension Vector: SIMD where Scalar: SIMDScalar & AdditiveArithmetic {
-    public typealias MaskStorage = Vector<N, Scalar.SIMDMaskScalar>
-}
-
-// MARK: Self: SIMDStorage
-@available(macOS 26.0, *)
-extension Vector: SIMDStorage where Scalar: AdditiveArithmetic & Codable & Hashable {
-    public init() {
-        self.init(.init(repeating: .zero))
-    }
-}
-
-// MARK: Self.N == 1
-@available(macOS 26.0, *)
-public extension Vector where N == 1 {
-    var x: Scalar {
-        get { elements[0] }
-        set { elements[0] = newValue }
-    }
-}
-
-// MARK: Self.N == 2
-#if VectorAliases
-@available(macOS 26.0, *)
-public typealias Vector2 = Vector<2, Double>
-@available(macOS 26.0, *)
-public typealias Vector2Int = Vector<2, Int>
-#endif
-
-@available(macOS 26.0, *)
-public extension Vector where N == 2 {
-    var x: Scalar {
-        get { elements[0] }
-        set { elements[0] = newValue }
-    }
-
-    var y: Scalar {
-        get { elements[1] }
-        set { elements[1] = newValue }
-    }
-}
-
-// MARK: Self.N == 3
-#if VectorAliases
-@available(macOS 26.0, *)
-public typealias Vector3 = Vector<3, Double>
-@available(macOS 26.0, *)
-public typealias Vector3Int = Vector<3, Int>
-#endif
-
-@available(macOS 26.0, *)
-public extension Vector where N == 3 {
-    var x: Scalar {
-        get { elements[0] }
-        set { elements[0] = newValue }
-    }
-
-    var y: Scalar {
-        get { elements[1] }
-        set { elements[1] = newValue }
-    }
-
-    var z: Scalar {
-        get { elements[2] }
-        set { elements[2] = newValue }
-    }
-
-    func cross(_ rhs: Self) -> Self where Scalar: Numeric {
-        .init([
-            y * rhs.z - z * rhs.y,
-            z * rhs.x - x * rhs.z,
-            x * rhs.y - y * rhs.x
-        ])
-    }
-}
-
-// MARK: Self.N == 4
-#if VectorAliases
-@available(macOS 26.0, *)
-public typealias Vector4 = Vector<4, Double>
-@available(macOS 26.0, *)
-public typealias Vector4Int = Vector<4, Int>
-#endif
-
-@available(macOS 26.0, *)
-public extension Vector where N == 4 {
-    var x: Scalar {
-        get { elements[0] }
-        set { elements[0] = newValue }
-    }
-
-    var y: Scalar {
-        get { elements[1] }
-        set { elements[1] = newValue }
-    }
-
-    var z: Scalar {
-        get { elements[2] }
-        set { elements[2] = newValue }
-    }
-
-    var w: Scalar {
-        get { elements[3] }
-        set { elements[3] = newValue }
-    }
-}
-
-// MARK: Scalar: AdditiveArithmetic
-@available(macOS 26.0, *)
-public extension Vector where Scalar: AdditiveArithmetic {
-    init(sequence elements: [Scalar]) {
-        self.init(sequence: elements, default: .zero)
-    }
-}
-
-// MARK: Scalar: ExpressibleByIntegerLiteral
-@available(macOS 26.0, *)
-public extension Vector where Scalar: ExpressibleByIntegerLiteral {
-    static var one: Self { .repeating(1) }
-
-    static func e(_ keyPath: WritableKeyPath<Self, Scalar>) -> Self {
-        var x = Self.repeating(0)
-        x[keyPath: keyPath] = 1
-        return x
-    }
-}
+extension Vector: Sendable where Scalar: Sendable {}
