@@ -21,18 +21,6 @@ public extension Array where Element == SwiftSetting {
     static var upcomingFeatures: Self { UpcomingFeatures.allCases.map(\.asSetting) }
 }
 
-func dep(local: String) -> Package.Dependency {
-    .package(path: local)
-}
-
-func dep(url: String, _ version: Range<Version>, local: String = "") -> Package.Dependency {
-    if local.isEmpty {
-        .package(url: url, version)
-    } else {
-        dep(local: local)
-    }
-}
-
 func lib(_ name: String, targets: String...) -> Product {
     .library(name: name, targets: targets)
 }
@@ -62,17 +50,17 @@ let nonempty = targetDep(name: "NonEmpty", package: "swift-nonempty", condition:
 let numerics = targetDep(name: "Numerics", package: "swift-numerics", condition: .when(traits: ["Numerics"]))
 let graphs = targetDep(name: "Graphs", package: "swift-graphs", condition: .when(traits: ["Graphs"]))
 
-let dependencies = [
-    dep(url: "https://github.com/pointfreeco/swift-nonempty", .upToNextMajor(from: "0.5.0")),
-    dep(url: "https://github.com/apple/swift-numerics", .upToNextMajor(from: "1.1.0")),
-    dep(url: "https://github.com/tevelee/swift-graphs", .upToNextMajor(from: "0.4.4"))
+let dependencies: [Package.Dependency] = [
+    .package(url: "https://github.com/pointfreeco/swift-nonempty", .upToNextMajor(from: "0.5.0")),
+    .package(url: "https://github.com/apple/swift-numerics", .upToNextMajor(from: "1.1.0")),
+    .package(url: "https://github.com/tevelee/swift-graphs", branch: "main")
 ]
 
 // MARK: - Targets
 let targets: [Target] = [
     .target(
         name: "Mathe",
-        dependencies: ["MatheCoordinates", "MatheGeometry", "MatheGraphs", "MatheRange", "MatheSIMD"],
+        dependencies: ["MatheAlgebra", "MatheCoordinates", "MatheGeometry", "MatheGraphs", "MatheRange", "MatheSIMD"],
         swiftSettings: .upcomingFeatures
     ),
     .target(
