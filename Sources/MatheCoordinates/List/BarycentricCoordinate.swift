@@ -8,6 +8,13 @@
 import MatheRange
 public import MatheSIMD
 
+/// Score used to determine how much of an overlap there is between shapes.
+/// - 1 indicates the shape is fully inside another.
+/// - Any other positive value indicates the overlap rate.
+/// - Zero indicates that the shapes touch each other, but do not overlap.
+/// - A negative value indicates that the shapes do not overlap or touch each other.
+@available(macOS 26.0.0, *)
+public typealias OverlapScore<Scalar: Numeric & Comparable> = BarycentricCoordinate<1, Scalar>
 /// Coordinate system where it's values represent the proportional distance to the center of a shape
 @available(macOS 26.0.0, *)
 public struct BarycentricCoordinate<let N: Int, Scalar: Numeric & Comparable> {
@@ -18,6 +25,14 @@ public struct BarycentricCoordinate<let N: Int, Scalar: Numeric & Comparable> {
     public var distanceFromCenter: Vector<N, Scalar> {
         .init { 1 - base[$0] }
     }
+    /// Is the coordinate on the center of the reference shape?
+    public var isCenter: Bool { base.all { $0 == 1 } }
+    /// Is the coordinate inside of the shape?
+    public var isInside: Bool { base.all { $0 > .zero } }
+    /// Is the coordinate outside of the shape?
+    public var isOutside: Bool { base.any { $0 < .zero } }
+    /// Is the coordinate on the shape's border?
+    public var isTangent: Bool { base.any { $0 == .zero } }
     // MARK: Initializers
     init(ceil base: Vector<N, Scalar>) {
         self.base = base.map { (...1).ceil($0) }
