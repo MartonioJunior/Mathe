@@ -75,6 +75,10 @@ public extension Path {
 
 // MARK: Node: Equatable
 public extension Path where Vertex: Equatable {
+    /// Is the path currently closed?
+    /// 
+    /// For the path to be closed, the source vertex should be the same as the destination.
+    /// Otherwise, the path is open, even if one of the intermediary vertices is also the destination.
     var isClosed: Bool { source == destination }
 
     func skip(_ vertex: Vertex) -> Self? {

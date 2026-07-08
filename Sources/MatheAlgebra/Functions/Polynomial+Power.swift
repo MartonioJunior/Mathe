@@ -17,10 +17,9 @@ public typealias ConstantFunction<T: ElementaryFunctions & AlgebraicField> = Pol
 public extension Polynomial where N == 1 {
     /// Returns a polynomial that always returns 1 no matter the input.
     static var one: Self { .init([1]) }
-    /// Returns the constant no matter the output.
-    /// - Parameter y: Output of the polynomial
+    /// Returns the constant of the polynomial.
     /// - Returns: `constant`.
-    func g(_ y: Scalar) -> Scalar { constant }
+    func g(_: Scalar) -> Scalar { constant }
     /// Creates a new zero-degree polynomial.
     /// - Parameter k: Value for the constant.
     /// - Returns: A new polynomial.

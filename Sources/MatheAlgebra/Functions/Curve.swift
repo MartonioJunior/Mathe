@@ -9,7 +9,7 @@ public import MatheRange
 
 /// Curve that describes a traditional image function, assuming the field to be the entire representable range of `T`.
 public typealias CurveFunction<T> = Curve<Void, T, T>
-/// Defines an image function that combines a field with a input to obtain it's output.
+/// Image of an interval to a topological field by a continuous function.
 /// 
 /// This allows the construction of new values based on known inputs.
 /// - `Field` works as the set of known values used by the curve.

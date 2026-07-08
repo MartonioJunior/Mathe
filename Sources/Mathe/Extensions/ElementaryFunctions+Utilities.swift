@@ -9,6 +9,7 @@
 public import Numerics
 
 public extension ElementaryFunctions {
+    /// Used mostly for chaining negative associations
     var negated: Self { .zero - self }
 
     func root(n exponent: Int) -> Self where Self: Comparable {
