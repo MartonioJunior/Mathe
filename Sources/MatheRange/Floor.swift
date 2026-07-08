@@ -7,7 +7,7 @@
 
 /// Defines the lower bound for an element.
 public protocol Floor: Boundary {
-    /// swiftlint:disable:next missing_docs
+    // swiftlint:disable:next missing_docs
     associatedtype Bound
     /// The minimum possible value for this boundary
     var lowerBound: Bound { get }

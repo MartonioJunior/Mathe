@@ -42,6 +42,7 @@ public struct CartesianCoordinate<let N: Int, Scalar: AdditiveArithmetic> {
 // MARK: Self: CoordinateSystem
 @available(macOS 26.0, *)
 extension CartesianCoordinate: CoordinateSystem {
+    // swiftlint:disable:next missing_docs
     public var components: Vector<N, Scalar> { base }
 }
 
