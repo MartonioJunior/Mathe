@@ -5,6 +5,7 @@
 //  Created by Martônio Júnior on 22/02/26.
 //
 
+@_exported import MatheAlgebra
 @_exported import MatheCoordinates
 @_exported import MatheGeometry
 @_exported import MatheGraphs
