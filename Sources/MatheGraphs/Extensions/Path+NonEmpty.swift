@@ -5,7 +5,8 @@
 //  Created by Martônio Júnior on 23/04/2026.
 //
 
-#if NonEmpty
+#if NonEmpty && Graphs
+public import Graphs
 public import NonEmpty
 
 public extension Path {

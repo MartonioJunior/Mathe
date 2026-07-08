@@ -6,6 +6,8 @@
 //
 
 #if Graphs
+public import Graphs
+
 public extension EdgeMutableGraph {
     /// Adds a connection to a new node
     mutating func connect(

@@ -6,6 +6,8 @@
 //
 
 #if Graphs
+public import Graphs
+
 public extension Path {
     var reversed: Self {
         .init(source: destination, destination: source, vertices: vertices.reversed(), edges: edges.reversed())
