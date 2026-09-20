@@ -75,7 +75,7 @@ let targets: [Target] = [
     ),
     .target(
         name: "MatheGeometry",
-        dependencies: ["MatheCoordinates"],
+        dependencies: ["MatheAlgebra", "MatheCoordinates"],
         swiftSettings: .upcomingFeatures
     ),
     .target(
