@@ -8,10 +8,6 @@
 // MARK: Self.Scalar: AdditiveArithmetic
 @available(macOS 26.0, *)
 public extension Vector where Scalar: AdditiveArithmetic {
-    /// The zero value.
-    /// 
-    /// Zero is the identity element for addition. For any value, x + .zero == x and .zero + x == x.
-    static var zero: Self { .repeating(.zero) }
     /// Creates a new instance based on it's scalar components.
     /// - Parameter elements: List of scalar components that compose the type.
     /// 
