@@ -21,6 +21,16 @@ public struct Distance<Value, T> {
     public init(_ f: @escaping (Value, Value) -> T) {
         self.f = f
     }
+    // MARK: Methods
+    /// Calculates the distance between values.
+    /// - Parameters:
+    ///   - start: Start point.
+    ///   - end: End point.
+    ///
+    /// Returns: Value representing the distance between two values.
+    public func callAsFunction(from start: Value, to end: Value) -> T {
+        f(start, end)
+    }
 }
 
 // MARK: DotSyntax
@@ -33,3 +43,5 @@ public extension Distance where Value: SignedNumeric & Comparable, Value == T {
     /// Manhattan distance between two values.
     static var manhattan: Self { .init { abs($0 - $1) } }
 }
+
+// TODO: Spherical Distance (Great-Circle Distance)
