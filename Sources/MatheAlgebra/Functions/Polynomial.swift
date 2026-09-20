@@ -36,7 +36,7 @@ public struct Polynomial<let N: Int, Scalar: ElementaryFunctions & AlgebraicFiel
     /// Returns the result for a given input.
     /// - Parameter x: Value used as input for the function.
     /// - Returns: The result of the polynomial with `x` as the input.
-    func callAsFunction(_ x: Scalar) -> Scalar {
+    public func callAsFunction(_ x: Scalar) -> Scalar {
         (0..<N).reduce(.zero) { $0 * x + coefficients[$1] }
     }
 }
