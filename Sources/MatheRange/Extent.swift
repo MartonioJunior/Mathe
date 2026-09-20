@@ -33,14 +33,18 @@ public struct Extent<Bound> {
     }
 }
 
+// MARK: Self: Boundary
+extension Extent: Boundary {
+    // swiftlint:disable:next missing_docs
+    public static func ~= (lhs: Extent<Bound>, rhs: Bound) -> Bool {
+        lhs.boundPredicate(rhs)
+    }
+}
+
 // MARK: Self: Gamut
 extension Extent: Gamut {
     // swiftlint:disable:next missing_docs
     public init(from lowerBound: Bound, to upperBound: Bound) {
         self.init(from: lowerBound, to: upperBound) { _ in false }
-    }
-    // swiftlint:disable:next missing_docs
-    public static func ~= (lhs: Extent<Bound>, rhs: Bound) -> Bool {
-        lhs.boundPredicate(rhs)
     }
 }
