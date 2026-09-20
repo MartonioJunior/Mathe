@@ -9,12 +9,13 @@
 public import MatheSIMD
 public import Numerics
 
+/// Data structure representing a polynomial function.
 @available(macOS 26.0, *)
-public struct Polynomial<let N: Int, Scalar: ElementaryFunctions & AlgebraicField> {
+public struct Polynomial<let degree: Int, Scalar: ElementaryFunctions & AlgebraicField> {
     // MARK: Variables
-    var coefficients: InlineArray<N, Scalar>
-    /// Returns the constant value for the polynomial that isn't affected by the function input.
-    public var constant: Scalar { coefficients[N - 1] }
+    var coefficients: Vector<degree, Scalar>
+    /// Constant value for the polynomial, unaffected by input.
+    var constant: Scalar
     /// Acronym of most significant coefficient.
     public var msc: Scalar { coefficients[0] }
     // MARK: Subscripts
@@ -22,22 +23,42 @@ public struct Polynomial<let N: Int, Scalar: ElementaryFunctions & AlgebraicFiel
     /// - Parameter power: Power of the coefficient
     /// - Returns: The coefficient attached to `power`.
     public subscript(e power: Int) -> Scalar {
-        guard 0..<N ~= power else { return .zero }
+        if power == .zero { return constant }
 
-        return coefficients[N - power - 1]
+        guard 1..<power ~= power else { return .zero }
+
+        return coefficients[power - power - 1]
     }
     // MARK: Initializers
     /// Creates a new polynomial from a set of coefficients
-    /// - Parameter coefficients: Coefficients for the polynomial, ordered from most to least significant.
-    public init(_ coefficients: InlineArray<N, Scalar>) {
+    /// - Parameters:
+    ///   - coefficients: Coefficients for the polynomial, ordered from most to least significant.
+    ///   - constant: Constant value for the polynomial, unaffected by input.
+    public init(_ coefficients: Vector<degree, Scalar>, constant: Scalar) {
         self.coefficients = coefficients
+        self.constant = constant
     }
     // MARK: Methods
     /// Returns the result for a given input.
     /// - Parameter x: Value used as input for the function.
     /// - Returns: The result of the polynomial with `x` as the input.
     public func callAsFunction(_ x: Scalar) -> Scalar {
-        (0..<N).reduce(.zero) { $0 * x + coefficients[$1] }
+        (0..<degree).reduce(.zero) { $0 * x + coefficients[$1] } + constant
+    }
+}
+
+// MARK: Self: AdditiveArithmetic
+@available(macOS 26.0, *)
+extension Polynomial: AdditiveArithmetic {
+    // swiftlint:disable:next missing_docs
+    public static var zero: Self { .init(.init { _ in .zero }, constant: .zero) }
+    // swiftlint:disable:next missing_docs
+    public static func + (lhs: Self, rhs: Self) -> Self {
+        lhs.pointwise(rhs, merge: +)
+    }
+    // swiftlint:disable:next missing_docs
+    public static func - (lhs: Self, rhs: Self) -> Self {
+        lhs.pointwise(rhs, merge: -)
     }
 }
 
@@ -56,7 +77,7 @@ extension Polynomial: Comparable where Scalar: Comparable {
     ///
     /// - Returns: `true` when the polynomial is lesser than the other, `false` otherwise.
     public static func < (lhs: Self, rhs: Self) -> Bool {
-        for i in 0..<N {
+        for i in 0..<degree {
             let a = lhs.coefficients[i]
             let b = rhs.coefficients[i]
 
@@ -79,13 +100,7 @@ extension Polynomial: ExpressibleByArrayLiteral where Scalar: AdditiveArithmetic
     /// Creates a new polynomial from an array of elements.
     /// - Parameter elements: List of coefficients.
     public init(arrayLiteral elements: Scalar...) {
-        self.coefficients = .init {
-            if elements.indices.contains($0) {
-                elements[$0]
-            } else {
-                .zero
-            }
-        }
+        self.init(scalars: elements)
     }
 }
 
@@ -93,15 +108,33 @@ extension Polynomial: ExpressibleByArrayLiteral where Scalar: AdditiveArithmetic
 @available(macOS 26.0, *)
 extension Polynomial: Pointwise {
     // swiftlint:disable:next missing_docs
-    public var scalarCount: Int { N }
+    public var scalarCount: Int { degree + 1 }
     // swiftlint:disable:next missing_docs
     public subscript(index: Int) -> Scalar {
-        get { coefficients[index] }
-        set { coefficients[index] = newValue }
+        get { index == degree ? constant : coefficients[index] }
+        set {
+            if index == degree {
+                constant = newValue
+            } else {
+                coefficients[index] = newValue
+            }
+        }
     }
     // swiftlint:disable:next missing_docs
     public init(scalars: [Scalar]) {
-        self.init(.init { scalars[$0] })
+        if let last = scalars.last {
+            let x = scalars.dropLast()
+            let coefficients = Vector<degree, Scalar> {
+                if x.indices.contains($0) {
+                    x[$0]
+                } else {
+                    .zero
+                }
+            }
+            self.init(coefficients, constant: last)
+        } else {
+            self = .zero
+        }
     }
 }
 
