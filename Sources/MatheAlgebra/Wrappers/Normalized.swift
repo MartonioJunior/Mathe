@@ -48,3 +48,12 @@ public extension SignedNumeric where Self: Comparable {
     /// Returns the value clamped to the -1...1 range.
     var normalized: Self { (-1...1).clamp(self) }
 }
+
+// MARK: Numerics (Trait)
+#if Numerics
+public import Numerics
+
+public extension Normalized where Value: AlgebraicField {
+    var saturated: Saturated<Value> { .init(clamped: (wrappedValue + 1 / 2)) }
+}
+#endif
