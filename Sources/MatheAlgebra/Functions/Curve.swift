@@ -47,7 +47,7 @@ public struct Curve<Field: Boundary, Value> {
     public func mapField(
         _ transform: (Field) -> Field
     ) -> Self {
-        .init(transform(field), f)
+        .init(transform(field), f: f)
     }
     /// Creates a new curve by transforming the input.
     /// - Parameter transform: Transformation function.
