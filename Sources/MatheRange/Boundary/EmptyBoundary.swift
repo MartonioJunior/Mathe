@@ -7,6 +7,7 @@
 
 /// Boundary that is completely absent of values.
 public struct EmptyBoundary<Bound> {
+    public init() {}
     // MARK: Methods
     public func difference(_: some Boundary<Bound>) -> Self { self }
     public func intersect(_: some Boundary<Bound>) -> Self { self }

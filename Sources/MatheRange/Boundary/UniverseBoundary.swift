@@ -7,6 +7,7 @@
 
 /// Boundary that represents all possible values for a type.
 public struct UniverseBoundary<Bound> {
+    public init() {}
     // MARK: Methods
     public func difference(_: some Boundary<Bound>) -> EmptyBoundary<Bound> { .init() }
     public func intersect<B: Boundary>(_ other: B) -> B where B.Bound == Bound { other }
