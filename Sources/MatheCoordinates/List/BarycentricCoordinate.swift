@@ -17,12 +17,12 @@ public import MatheSIMD
 public typealias OverlapScore<Scalar: Numeric & Comparable> = BarycentricCoordinate<1, Scalar>
 /// Coordinate system where it's values represent the proportional distance to the center of a shape
 @available(macOS 26.0.0, *)
-public struct BarycentricCoordinate<let N: Int, Scalar: Numeric & Comparable> {
+public struct BarycentricCoordinate<let n: Int, Scalar: Numeric & Comparable> {
     // MARK: Variables
     /// Components that describe the barycentric coordinate
-    var base: Vector<N, Scalar>
+    var base: Vector<n, Scalar>
     /// Defines the distance between the point and the center
-    public var distanceFromCenter: Vector<N, Scalar> {
+    public var distanceFromCenter: Vector<n, Scalar> {
         .init { 1 - base[$0] }
     }
     /// Is the coordinate on the center of the reference shape?
@@ -34,7 +34,7 @@ public struct BarycentricCoordinate<let N: Int, Scalar: Numeric & Comparable> {
     /// Is the coordinate on the shape's border?
     public var isTangent: Bool { base.any { $0 == .zero } }
     // MARK: Initializers
-    init(ceil base: Vector<N, Scalar>) {
+    init(ceil base: Vector<n, Scalar>) {
         self.base = base.map { (...1).ceil($0) }
     }
 }
@@ -52,9 +52,9 @@ public extension CoordinateSystem {
     /// the numbers in the `...1` range
     /// - Parameter base: Vector with all components for the coordinate
     /// - Returns: A new valid `BarycentricCoordinate` instance
-    static func barycentric<let N: Int, Scalar>(
-        ceil base: Vector<N, Scalar>
-    ) -> Self where Self == BarycentricCoordinate<N, Scalar> {
+    static func barycentric<let n: Int, Scalar>(
+        ceil base: Vector<n, Scalar>
+    ) -> Self where Self == BarycentricCoordinate<n, Scalar> {
         .init(ceil: base)
     }
 }

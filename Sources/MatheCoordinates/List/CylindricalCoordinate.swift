@@ -5,11 +5,21 @@
 //  Created by Martônio Júnior on 10/10/2025.
 //
 
+public import MatheSIMD
+
 /// Coordinate that represents a position based on a cylinder shape
 public struct CylindricalCoordinate<Scalar: AdditiveArithmetic> {
     var radius: Scalar
     var angle: Scalar
     var height: Scalar
+}
+
+// MARK: DotSyntax
+public extension CoordinateSystem {
+    @available(macOS 26.0, *)
+    static func cylindrical<T: AdditiveArithmetic>(_ vector: Vector<3, T>) -> Self where Self == CylindricalCoordinate<T> {
+        .cylindrical(r: vector[0], angle: vector[1], h: vector[2])
+    }
 }
 
 // MARK: Self: CoordinateSystem

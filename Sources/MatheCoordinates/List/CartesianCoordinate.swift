@@ -12,29 +12,29 @@ public import MatheSIMD
 /// Assumes that the base is axis-aligned with the cartesian plane.
 @available(macOS 26.0, *)
 @dynamicMemberLookup
-public struct CartesianCoordinate<let N: Int, Scalar: AdditiveArithmetic> {
+public struct CartesianCoordinate<let n: Int, Scalar: AdditiveArithmetic> {
     // MARK: Variables
-    var base: Vector<N, Scalar>
+    var base: Vector<n, Scalar>
     /// Proxy for accessing values in the base vector.
     /// - Parameter keyPath: Key path to the vector property.
     /// - Returns: The accessed property on the vector.
-    public subscript<T>(dynamicMember keyPath: KeyPath<Vector<N, Scalar>, T>) -> T {
+    public subscript<T>(dynamicMember keyPath: KeyPath<Vector<n, Scalar>, T>) -> T {
         base[keyPath: keyPath]
     }
     /// Proxy for accessing and setting values in the base vector.
     /// - Parameter keyPath: Writable Key path to the vector property.
     /// - Returns: The accessed property on the vector.
-    public subscript<T>(dynamicMember keyPath: WritableKeyPath<Vector<N, Scalar>, T>) -> T {
+    public subscript<T>(dynamicMember keyPath: WritableKeyPath<Vector<n, Scalar>, T>) -> T {
         get { base[keyPath: keyPath] }
         set { base[keyPath: keyPath] = newValue }
     }
 
     // MARK: Initializers
-    init(base: Vector<N, Scalar>) {
+    init(base: Vector<n, Scalar>) {
         self.base = base
     }
 
-    init(_ values: [N of Scalar]) {
+    init(_ values: [n of Scalar]) {
         self.init(base: .init(values))
     }
 }
@@ -43,7 +43,7 @@ public struct CartesianCoordinate<let N: Int, Scalar: AdditiveArithmetic> {
 @available(macOS 26.0, *)
 extension CartesianCoordinate: CoordinateSystem {
     // swiftlint:disable:next missing_docs
-    public var components: Vector<N, Scalar> { base }
+    public var components: Vector<n, Scalar> { base }
 }
 
 // MARK: Self: Equatable
@@ -93,7 +93,7 @@ public extension CoordinateSystem {
     ///   - x: Vector that defines the cartesian coordinate.
     ///
     /// - Returns: A new N-dimensional `CartesianCoordinate` instance.
-    static func cartesian<let N: Int, T>(_ vector: Vector<N, T>) -> Self  where Self == CartesianCoordinate<N, T> {
+    static func cartesian<let n: Int, T>(_ vector: Vector<n, T>) -> Self  where Self == CartesianCoordinate<n, T> {
         .init(base: vector)
     }
 }
