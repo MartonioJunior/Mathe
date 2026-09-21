@@ -17,29 +17,8 @@ public protocol Gamut: Floor, Ceiling {
 
 // MARK: Default Implementation
 public extension Gamut {
-    /// Checks whether the gamut is entirely inside a given boundary.
-    /// 
-    /// To a gamut to be inside of a boundary, both it's upper and lower bounds have to be inside of it.
-    /// - Parameter boundary: A boundary to compare to.
-    /// - Returns: `true` when the gamut is inside of the boundary, `false` otherwise.
-    func isInside<B: Boundary>(_ boundary: B) -> Bool where Bound == B.Bound {
-        boundary.contains(lowerBound) && boundary.contains(upperBound)
-    }
-    /// Checks if the gamut is outside of a boundary.
-    /// 
-    /// To a gamut to be outside of a boundary, both it's upper and lower bounds have to be outside of it.
-    /// - Parameter boundary: A boundary to compare to.
-    /// - Returns: `true` when the gamut is outside of the boundary, `false` otherwise.
-    func isOutside<B: Boundary>(_ boundary: B) -> Bool where Bound == B.Bound {
-        boundary.isAbove(self) || boundary.isBelow(self)
-    }
-    /// Checks if there's any overlap between the gamut and the boundary.
-    /// 
-    /// To a gamut to be overlapping a boundary, either it's upper or lower bounds need to be inside of it.
-    /// - Parameter boundary: A boundary to compare to.
-    /// - Returns: `true` when the gamut is overlapping the boundary, `false` otherwise.
-    func overlaps<B: Boundary>(_ boundary: B) -> Bool where Bound == B.Bound {
-        !isOutside(boundary)
+    func reduceBounds<T>(_ reducer: (Bound, Bound) -> T) -> T {
+        reducer(lowerBound, upperBound)
     }
 }
 
@@ -128,20 +107,6 @@ public extension Gamut where Bound: SignedNumeric & Comparable {
 
 // MARK: Self.Bound: Strideable
 public extension Gamut where Bound: Strideable {
-    /// Checks whether a gamut is adjacent to another.
-    /// 
-    /// For a gamut to be adjacent to another, it must contain either the `lowerBound`'s predecessor or `upperBound`'s successor.
-    /// - Parameter other: Gamut to compare to.
-    /// - Returns: `true` when the gamut is adjacent, `false` otherwise.
-    func adjacent(to other: Self) -> Bool {
-        other ~= lowerBound.advanced(by: -1) || other ~= upperBound.advanced(by: 1)
-    }
-    /// Checks whether a gamut is adjacent or overlaps with another gamut.
-    /// - Parameter other: Gamut to compare to.
-    /// - Returns: `true` when the gamut is adjacent or overlaps, `false` otherwise.
-    func overlapsOrAdjacent(to other: Self) -> Bool {
-        other.overlaps(Self(from: lowerBound.advanced(by: -1), to: upperBound.advanced(by: 1)))
-    }
     /// Creates a stride for this gamut.
     /// - Parameter jump: Value to be used for advancing the stride.
     /// - Returns: A `StrideTo` instance from `lowerBound` up to, but not including, `upperBound`.
@@ -153,18 +118,6 @@ public extension Gamut where Bound: Strideable {
     /// - Returns: A `StrideTo` instance from `lowerBound` to `upperBound`.
     func strideThrough(by jump: Bound.Stride) -> StrideThrough<Bound> {
         stride(from: lowerBound, through: upperBound, by: jump)
-    }
-}
-
-// MARK: Boundary (EX)
-public extension Boundary {
-    /// Checks whether a gamut is entirely within a boundary.
-    /// 
-    /// For a gamut to be inside of a boundary, both it's upper and lower bounds have to be inside of it.
-    /// - Parameter gamut: Gamut to be compared to.
-    /// - Returns: `true` when the boundary is inside the gamut, `false` otherwise.
-    func envelops<G: Gamut>(_ gamut: G) -> Bool where Bound == G.Bound {
-        gamut.isInside(self)
     }
 }
 
