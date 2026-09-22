@@ -93,6 +93,25 @@ public extension Gamut where Bound: Equatable {
     var isShortCircuited: Bool { lowerBound == upperBound }
 }
 
+// MARK: Self.Bound: FloatingPoint
+public extension Gamut where Bound: FloatingPoint {
+    // Value stays within lower and upper bounds
+    func loop(_ value: Bound) -> Bound {
+        (value - lowerBound).truncatingRemainder(dividingBy: distance) + lowerBound
+    }
+
+    func moveTowards(from value: Bound) -> Bound {
+        let distance = distance
+        return min(abs(distance), value) * Bound(distance.sign.rawValue) + lowerBound
+    }
+
+    func pingPong(_ x: Bound) -> Bound {
+        let d = distance
+        return d - abs((x - lowerBound).truncatingRemainder(dividingBy: d * 2) - d) + lowerBound
+    }
+    
+}
+
 // MARK: Self.Bound: Numeric
 public extension Gamut where Bound: Numeric {
     /// Product of `lowerBound` with `upperBound`
