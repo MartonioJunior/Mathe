@@ -109,7 +109,6 @@ public extension Gamut where Bound: FloatingPoint {
         let d = distance
         return d - abs((x - lowerBound).truncatingRemainder(dividingBy: d * 2) - d) + lowerBound
     }
-    
 }
 
 // MARK: Self.Bound: Numeric
