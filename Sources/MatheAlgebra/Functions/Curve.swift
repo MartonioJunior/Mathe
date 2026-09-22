@@ -133,3 +133,10 @@ public extension Curve {
         .init(.init()) { f($1) }
     }
 }
+
+// MARK: Boundary (EX)
+public extension Boundary {
+    func makeCurve<T>(f: @escaping (Self, Bound) -> T) -> Curve<Self, T> {
+        .init(self, f: f)
+    }
+}
