@@ -5,46 +5,43 @@
 //  Created by Martônio Júnior on 22/04/2026.
 //
 
-/// Predicate-based boundary that defines an open range.
+/// Closed interval that is a gamut, but not always a boundary.
 /// 
-/// Different from `ClosedRange` and `Range`, this type does not require `Bound` to conform to `Comparable` to work.
+/// Different from `ClosedRange` and `Range`, this type does not require `Bound` to conform to `Comparable` to be used
+/// or that it's upper bound is greater or equal than it's lower bound.
 public struct Extent<Bound> {
     // MARK: Variables
     // swiftlint:disable:next missing_docs
     public var lowerBound: Bound
     // swiftlint:disable:next missing_docs
     public var upperBound: Bound
-    /// Predicate used to define whether a value belongs in the boundary.
-    var boundPredicate: (Bound) -> Bool
     // MARK: Initializers
-    /// Creates a new extent based on lower bound, upper bound and a predicate.
+    /// Creates a new extent based on lower and upper bounds.
     /// - Parameters:
     ///   - lowerBound: Minimum possible value.
     ///   - upperBound: Maximum possible value.
-    ///   - boundPredicate: Predicate for the type.
     public init(
         from lowerBound: Bound,
-        to upperBound: Bound,
-        boundPredicate: @escaping (Bound) -> Bool
+        to upperBound: Bound
     ) {
         self.lowerBound = lowerBound
         self.upperBound = upperBound
-        self.boundPredicate = boundPredicate
-    }
-}
-
-// MARK: Self: Boundary
-extension Extent: Boundary {
-    // swiftlint:disable:next missing_docs
-    public static func ~= (lhs: Extent<Bound>, rhs: Bound) -> Bool {
-        lhs.boundPredicate(rhs)
     }
 }
 
 // MARK: Self: Gamut
-extension Extent: Gamut {
-    // swiftlint:disable:next missing_docs
-    public init(from lowerBound: Bound, to upperBound: Bound) {
-        self.init(from: lowerBound, to: upperBound) { _ in false }
+extension Extent: Gamut {}
+
+// MARK: Self.Bound: Comparable
+public extension Extent where Bound: Comparable {
+    /// Closed range represented by the extent.
+    /// 
+    /// Automatically corrects values to be in order.
+    var range: ClosedRange<Bound> {
+        if lowerBound < upperBound {
+            lowerBound...upperBound
+        } else {
+            upperBound...lowerBound
+        }
     }
 }
