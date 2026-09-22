@@ -45,3 +45,21 @@ public extension Distance where Value: SignedNumeric & Comparable, Value == T {
 }
 
 // TODO: Spherical Distance (Great-Circle Distance)
+
+// MARK: Numerics (Trait)
+#if Numerics
+public import Numerics
+public import MatheSIMD
+
+public extension Distance where Value: Pointwise, Value.Scalar: SignedNumeric & Comparable & ElementaryFunctions, Value.Scalar == T {
+    static var chebyshev: Self {
+        .init { ($0 .- $1).max.value }
+    }
+    /// Minkowsi distance between two values.
+    /// - Parameter exponent: Exponent used in the formula.
+    /// - Returns:
+    static func minkowski(_ exponent: Int) -> Self {
+        .init { $0.pointwise($1) { .pow(abs($0 - $1), exponent) }.componentSum.pow(1 / exponent)  }
+    }
+}
+#endif
