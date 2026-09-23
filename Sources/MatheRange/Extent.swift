@@ -29,6 +29,9 @@ public struct Extent<Bound> {
     }
 }
 
+// MARK: Self: Equatable
+extension Extent: Equatable where Bound: Equatable {}
+
 // MARK: Self: Gamut
 extension Extent: Gamut {}
 
