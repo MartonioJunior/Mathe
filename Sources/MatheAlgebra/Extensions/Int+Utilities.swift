@@ -6,7 +6,7 @@
 //
 
 #if Numerics
-public import Numerics
+import Numerics
 
 public extension Int {
     static func log2(_ x: Self) -> Self {

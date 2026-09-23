@@ -6,7 +6,7 @@
 //
 
 #if Numerics
-public import Numerics
+import Numerics
 
 // MARK: Fast Cosine
 public extension FloatingPoint {
