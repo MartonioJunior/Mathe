@@ -30,6 +30,6 @@ public extension Shape where Coordinate.Scalar: Comparable {
     /// - Parameter point: Coordinate to compare.
     /// - Returns: `.inside` when point is part of the shape, `.outside` when it's not.
     func comparePoint(_ point: Coordinate) -> OverlapScore {
-        distanceFromBorder(for: point) > .zero ? .outside : .inside
+        distanceFromBorder(for: point) > .zero ? .outside() : .inside
     }
 }
