@@ -26,7 +26,34 @@ public struct AngularCoordinate<let dimensions: Int, Scalar: AdditiveArithmetic>
 
 // MARK: Self: CoordinateSystem
 @available(macOS 26.0, *)
-extension AngularCoordinate: CoordinateSystem {}
+extension AngularCoordinate: CoordinateSystem {
+    // swiftlint:disable:next missing_docs
+    public typealias Components = DisplacementFor<Self>
+    // swiftlint:disable:next missing_docs
+    public var components: Components { .init(offset: self) }
+}
+
+// MARK: Self: Pointwise
+@available(macOS 26.0, *)
+extension AngularCoordinate: Pointwise {
+    // swiftlint:disable:next missing_docs
+    public var scalarCount: Int { angle.scalarCount + 1 }
+    // swiftlint:disable:next missing_docs
+    public subscript(index: Int) -> Scalar {
+        get { index == 0 ? radius : angle[index - 1] }
+        set {
+            if index == 0 {
+                radius = newValue
+            } else {
+                angle[index - 1] = newValue
+            }
+        }
+    }
+    // swiftlint:disable:next missing_docs
+    public init(scalars: [Scalar]) {
+        self.init(radius: scalars[0], angle: .init(scalars: Array(scalars.dropFirst())))
+    }
+}
 
 // MARK: CoordinateSystem (EX)
 @available(macOS 26.0, *)
