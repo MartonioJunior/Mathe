@@ -5,19 +5,22 @@
 //  Created by Martônio Júnior on 12/07/2025.
 //
 
+public import MatheSIMD
+
 /// Data structure that defines a dimensional positioning coordinate
 public protocol CoordinateSystem {
-    /// Vector containing all components that describe this position
-    associatedtype Components = Never
-    /// Type representing the numerical value used for one component
+    /// Displacement vector used to move the coordinate.
+    /// 
+    /// Contains all components that describe a coordinate.
+    associatedtype Components: Pointwise
+    /// Type representing the numerical value used for one component.
     associatedtype Scalar: AdditiveArithmetic = Double
-
-    /// Collection of ordered numbers that uniquely describe this coordinate position
+    // MARK: Variables
+    /// Displacement from the origin that uniquely describes this coordinate position.
     var components: Components { get }
-}
-
-// MARK: Self.Value == Never
-public extension CoordinateSystem where Components == Never {
-    // swiftlint:disable:next missing_docs
-    var components: Never { fatalError("Components vector was not defined!") }
+    // MARK: Methods
+    /// Applies a displacement to a coordinate.
+    /// - Parameter displacement: Displacement vector. 
+    /// - Returns: Offset coordinate.
+    func offset(by displacement: Components) -> Self
 }
