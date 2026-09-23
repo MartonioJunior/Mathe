@@ -43,7 +43,13 @@ public struct CartesianCoordinate<let n: Int, Scalar: AdditiveArithmetic> {
 @available(macOS 26.0, *)
 extension CartesianCoordinate: CoordinateSystem {
     // swiftlint:disable:next missing_docs
-    public var components: Vector<n, Scalar> { base }
+    public typealias Components = Vector<n, Scalar>
+    // swiftlint:disable:next missing_docs
+    public var components: Components { base }
+    // swiftlint:disable:next missing_docs
+    public func offset(by displacement: Components) -> CartesianCoordinate<n, Scalar> {
+        .init(base: base .+ displacement)
+    }
 }
 
 // MARK: Self: Equatable
