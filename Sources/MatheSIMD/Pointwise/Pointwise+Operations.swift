@@ -137,6 +137,8 @@ public extension Pointwise where Scalar: FloatingPoint {
 public extension Pointwise where Scalar: Numeric {
     /// Product of all components.
     var componentProduct: Scalar { reduce(1, *) }
+    /// Dot product of a vector by itself.
+    var magnitudeSquared: Scalar { dot(self) }
     /// Performs the dot product against another pointwise.
     /// - Parameter rhs: Another pointwise.
     /// - Returns: A scalar representing the component sum of the product of two pointwise instances.

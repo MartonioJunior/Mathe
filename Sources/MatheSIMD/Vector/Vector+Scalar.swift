@@ -95,8 +95,6 @@ public extension Vector where Scalar: Numeric {
     static var forward: Self { .basis(2, value: 1) }
     /// Vector with -1 in index 2 and zero in the rest.
     static var back: Self { .basis(2, value: -1) }
-    /// Dot product of a vector by itself.
-    var magnitudeSquared: Scalar { dot(self) }
     /// Creates a new basis vector.
     /// - Parameter index: Relevant index of the basis.
     /// - Returns: A new basis vector with 1 in it's most relevant index and 0 everywhere else.

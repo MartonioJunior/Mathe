@@ -33,11 +33,6 @@ public extension Vector where Scalar: AlgebraicField {
 
 @available(macOS 26.0, *)
 public extension Vector where Scalar: AlgebraicField & Comparable & ElementaryFunctions {
-    /// Returns an equivalent vector where it's magnitude equals one.
-    var normalized: Self {
-        let m = self.magnitude
-        return (m != 0) ? self / m : .repeating(0)
-    }
     /// Creates an orthonormalized vector based on a given tangent.
     /// - Parameter tangent: Tangent vector.
     /// - Returns: The delta between the tangent and it's projection on the vector.
@@ -123,12 +118,5 @@ public extension Vector where Scalar: Numeric & AlgebraicField {
     static func ^ (lhs: Self, rhs: Self) -> Scalar where Scalar: ElementaryFunctions, N == 2 {
         Matrix<2, N, Scalar>(.init([lhs, rhs])).determinant
     }
-}
-
-// MARK: Self.Scalar: Numeric
-@available(macOS 26.0, *)
-public extension Vector where Scalar: Numeric & Comparable & ElementaryFunctions {
-    /// Absolute length for the given type.
-    var magnitude: Scalar { Scalar.root(dot(self), 2) }
 }
 #endif
