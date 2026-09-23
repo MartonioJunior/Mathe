@@ -34,7 +34,16 @@ public struct BarycentricCoordinate<let n: Int, Scalar: Numeric & Comparable> {
 
 // MARK: Self: CoordinateSystem
 @available(macOS 26.0.0, *)
-extension BarycentricCoordinate: CoordinateSystem {}
+extension BarycentricCoordinate: CoordinateSystem {
+    // swiftlint:disable:next missing_docs
+    public typealias Components = Vector<n, Scalar>
+    // swiftlint:disable:next missing_docs
+    public var components: Components { base }
+    // swiftlint:disable:next missing_docs
+    public func offset(by displacement: Components) -> Self {
+        .init(ceil: base .+ displacement)
+    }
+}
 
 // MARK: CoordinateSystem (EX)
 @available(macOS 26.0.0, *)
