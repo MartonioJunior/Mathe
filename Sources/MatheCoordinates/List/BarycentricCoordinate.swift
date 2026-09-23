@@ -8,13 +8,6 @@
 import MatheRange
 public import MatheSIMD
 
-/// Score used to determine how much of an overlap there is between shapes.
-/// - 1 indicates the shape is fully inside another.
-/// - Any other positive value indicates the overlap rate.
-/// - Zero indicates that the shapes touch each other, but do not overlap.
-/// - A negative value indicates that the shapes do not overlap or touch each other.
-@available(macOS 26.0.0, *)
-public typealias OverlapScore<Scalar: Numeric & Comparable> = BarycentricCoordinate<1, Scalar>
 /// Coordinate system where it's values represent the proportional distance to the center of a shape
 @available(macOS 26.0.0, *)
 public struct BarycentricCoordinate<let n: Int, Scalar: Numeric & Comparable> {

@@ -6,6 +6,12 @@
 //
 
 /// Data structure that represents the overlap between two distinct boundaries.
+/// 
+/// Score used to determine how much of an overlap there is between shapes.
+/// - 1 indicates the shape is fully inside another.
+/// - Any other positive value indicates the overlap rate.
+/// - Zero indicates that the shapes touch each other, but do not overlap.
+/// - A negative value indicates that the shapes do not overlap or touch each other.
 public struct OverlapScore {
     /// How much does boundary A overlap boundary B?
     /// 
