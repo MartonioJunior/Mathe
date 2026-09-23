@@ -22,8 +22,9 @@ public struct Intersection<A: Boundary, B: Boundary> where A.Bound == B.Bound {
 
 // MARK: Self: Boundary
 extension Intersection: Boundary {
+    // swiftlint:disable:next missing_docs
     public typealias Bound = A.Bound
-
+    // swiftlint:disable:next missing_docs
     public static func ~= (lhs: Self, rhs: Bound) -> Bool {
         lhs.left.contains(rhs) && lhs.right.contains(rhs)
     }
