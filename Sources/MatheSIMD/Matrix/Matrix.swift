@@ -5,15 +5,12 @@
 //  Created by Martônio Júnior on 25/04/25.
 //
 
-/// Alternative alias for `Matrix`
-@available(macOS 26.0, *)
-public typealias Matrix2<let a: Int, let b: Int, Scalar> = Matrix<a, b, Scalar>
 /// Defines a three-dimensional matrix by storing a vector in each position.
 @available(macOS 26.0, *)
-public typealias Matrix3<let a: Int, let b: Int, let c: Int, Scalar> = Matrix2<a, b, Vector<c, Scalar>>
+public typealias Tensor<let a: Int, let b: Int, let c: Int, Scalar> = Matrix<a, b, Vector<c, Scalar>>
 /// Defines a four-dimensional matrix by storing a matrix in each position.
 @available(macOS 26.0, *)
-public typealias Matrix4<let a: Int, let b: Int, let c: Int, let d: Int, Scalar> = Matrix2<a, b, Matrix2<c, d, Scalar>>
+public typealias MultiTensor<let a: Int, let b: Int, let c: Int, let d: Int, Scalar> = Matrix<a, b, Matrix<c, d, Scalar>>
 /// Rectangular array of values arranged in rows and columns.
 /// - Rows: Number of rows of this matrix. Also the size of a column.
 /// - Columns: Number of columns of this matrix. Also the size of a row.
