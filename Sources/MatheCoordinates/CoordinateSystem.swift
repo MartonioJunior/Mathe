@@ -12,7 +12,7 @@ public protocol CoordinateSystem {
     /// Displacement vector used to move the coordinate.
     /// 
     /// Contains all components that describe a coordinate.
-    associatedtype Components: Pointwise
+    associatedtype Components: Pointwise = DisplacementFor<Self>
     /// Type representing the numerical value used for one component.
     associatedtype Scalar: AdditiveArithmetic = Double
     // MARK: Variables
