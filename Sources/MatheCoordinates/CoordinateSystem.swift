@@ -24,3 +24,11 @@ public protocol CoordinateSystem {
     /// - Returns: Offset coordinate.
     func offset(by displacement: Components) -> Self
 }
+
+// MARK: Default Implementation
+public extension CoordinateSystem where Self: Pointwise, Scalar == Components.Scalar, Scalar: AdditiveArithmetic {
+    // swiftlint:disable:next missing_docs
+    func offset(by displacement: Components) -> Self {
+        pointwise(displacement, merge: +)
+    }
+}
