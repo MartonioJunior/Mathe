@@ -6,6 +6,7 @@
 //
 
 public import MatheCoordinates
+public import MatheRange
 
 /// Representation of a geometric figure of any dimension.
 public protocol Shape: Geometric {
