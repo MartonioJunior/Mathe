@@ -7,20 +7,19 @@
 
 /// Alternative alias for `Matrix`
 @available(macOS 26.0, *)
-public typealias Matrix2<let A: Int, let B: Int, Scalar> = Matrix<A, B, Scalar>
+public typealias Matrix2<let a: Int, let b: Int, Scalar> = Matrix<a, b, Scalar>
 /// Defines a three-dimensional matrix by storing a vector in each position.
 @available(macOS 26.0, *)
-public typealias Matrix3<let A: Int, let B: Int, let C: Int, Scalar> = Matrix2<A, B, Vector<C, Scalar>>
+public typealias Matrix3<let a: Int, let b: Int, let c: Int, Scalar> = Matrix2<a, b, Vector<c, Scalar>>
 /// Defines a four-dimensional matrix by storing a matrix in each position.
 @available(macOS 26.0, *)
-public typealias Matrix4<let A: Int, let B: Int, let C: Int, let D: Int, Scalar> = Matrix2<A, B, Matrix2<C, D, Scalar>>
-
+public typealias Matrix4<let a: Int, let b: Int, let c: Int, let d: Int, Scalar> = Matrix2<a, b, Matrix2<c, d, Scalar>>
 /// Rectangular array of values arranged in rows and columns.
 /// - Rows: Number of rows of this matrix. Also the size of a column.
 /// - Columns: Number of columns of this matrix. Also the size of a row.
 /// - Scalar: Value stored inside of the matrix.
 @available(macOS 26.0.0, *)
-public struct Matrix<let Rows: Int, let Columns: Int, Scalar> {
+public struct Matrix<let rows: Int, let columns: Int, Scalar> {
     // swiftlint:disable:next missing_docs
     public typealias Index = Int
     /// Type that describes the size of the matrix.
@@ -29,17 +28,17 @@ public struct Matrix<let Rows: Int, let Columns: Int, Scalar> {
     public typealias Position = MatrixIndex<2>
     // MARK: Variables
     /// Column to row ratio of a matrix.
-    public static var aspectRatio: Double { Double(Columns) / Double(Rows) }
+    public static var aspectRatio: Double { Double(columns) / Double(rows) }
     /// Size of the matrix.
-    public static var size: Size { .init([Rows, Columns]) }
+    public static var size: Size { .init([rows, columns]) }
     /// Internal storage of the matrix.
     /// 
     /// Stores values in a vector of row vectors.
-    public internal(set) var vectors: Vector<Rows, Vector<Columns, Scalar>>
+    public internal(set) var vectors: Vector<rows, Vector<columns, Scalar>>
     /// Transposed of the matrix.
     /// 
     /// Also known as the Inverse Matrix.
-    public var transposed: Matrix<Columns, Rows, Scalar> { .init { self[r: $0.column, c: $0.row] } }
+    public var transposed: Matrix<columns, rows, Scalar> { .init { self[r: $0.column, c: $0.row] } }
     // MARK: Subscripts
     /// Element in a given matrix position.
     /// - Parameter position: Position in the matrix.
@@ -61,26 +60,26 @@ public struct Matrix<let Rows: Int, let Columns: Int, Scalar> {
     /// Row of the matrix.
     /// - Parameter row: Row index.
     /// - Returns: A vector containing all of the elements in the given matrix row.
-    public subscript(r row: Int) -> Vector<Columns, Scalar> {
+    public subscript(r row: Int) -> Vector<columns, Scalar> {
         get { vectors[row] }
         set { vectors[row] = newValue }
     }
     /// Column of the matrix.
     /// - Parameter column: Column index.
     /// - Returns: A vector containing all of the elements in the given matrix column.
-    public subscript(c column: Int) -> Vector<Rows, Scalar> {
+    public subscript(c column: Int) -> Vector<rows, Scalar> {
         get { .init { self[Position(r: $0, c: column)] } }
         set { vectors.indices.forEach { self[Position(r: $0, c: column)] = newValue[$0] } }
     }
     // MARK: Initializers
     /// Creates a new matrix from a vector of row vectors.
     /// - Parameter elements: Vector of row vectors.
-    public init(_ elements: Vector<Rows, Vector<Columns, Scalar>>) {
+    public init(_ elements: Vector<rows, Vector<columns, Scalar>>) {
         self.vectors = elements
     }
     /// Creates a new matrix from an inline array of inline arrays.
     /// - Parameter arrays: Inline array of inline arrays, with the latter representing one row each.
-    public init(_ arrays: [Rows of [Columns of Scalar]]) {
+    public init(_ arrays: [rows of [columns of Scalar]]) {
         vectors = .init { .init(arrays[$0]) }
     }
     /// Creates a new matrix by mapping a position to a value.
@@ -113,14 +112,14 @@ public struct Matrix<let Rows: Int, let Columns: Int, Scalar> {
     /// - Parameter transform: Flatten function.
     /// - Returns: A vector containing all flattened columns.
     /// - Throws: Error `E` when a flatten operation fails.
-    func flatColumns<T, E: Error>(_ transform: (Vector<Rows, Scalar>) throws(E) -> T) rethrows -> Vector<Columns, T> {
+    func flatColumns<T, E: Error>(_ transform: (Vector<rows, Scalar>) throws(E) -> T) rethrows -> Vector<columns, T> {
         try .init { try transform(self[c: $0]) }
     }
     /// Transforms the matrix into a vector by flatting rows.
     /// - Parameter transform: Flatten function.
     /// - Returns: A vector containing all flattened rows.
     /// - Throws: Error `E` when a flatten operation fails.
-    func flatRows<T, E: Error>(_ transform: (Vector<Columns, Scalar>) throws(E) -> T) rethrows -> Vector<Rows, T> {
+    func flatRows<T, E: Error>(_ transform: (Vector<columns, Scalar>) throws(E) -> T) rethrows -> Vector<rows, T> {
         try .init { try transform(self[r: $0]) }
     }
     /// Determines the array index for a given position in the matrix.

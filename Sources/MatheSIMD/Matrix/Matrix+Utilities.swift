@@ -7,58 +7,58 @@
 
 // MARK: Matrix NxN
 @available(macOS 26.0.0, *)
-public extension Matrix where Columns == Rows {
+public extension Matrix where columns == rows {
     /// Diagonal for this matrix.
-    var diagonal: Vector<Rows, Scalar> {
+    var diagonal: Vector<rows, Scalar> {
         .init { self[r: $0, c: $0] }
     }
     /// Creates a new square matrix from a vector of row vectors.
     /// - Parameter vector: Vector of row vectors.
     /// - Returns: A new NxN matrix.
-    static func squareMatrix(_ vector: Vector<Rows, Vector<Columns, Scalar>>) -> Self {
+    static func squareMatrix(_ vector: Vector<rows, Vector<columns, Scalar>>) -> Self {
         .init(vector)
     }
 }
 
 // MARK: Matrix Nx1
 @available(macOS 26.0.0, *)
-public extension Matrix where Columns == 1 {
+public extension Matrix where columns == 1 {
     /// Creates a column vector matrix.
     /// - Parameter vector: Vector to be used as the base.
     /// - Returns: Nx1 matrix composed of `vector` components.
-    static func columnMatrix(_ vector: Vector<Rows, Scalar>) -> Self {
+    static func columnMatrix(_ vector: Vector<rows, Scalar>) -> Self {
         .init { vector[$0[0]] }
     }
     /// Transposes a vector as a column.
     /// - Parameter vector: Vector to be used as the base.
     /// - Returns: Nx1 matrix composed of `vector` components.
-    static func transposed(_ vector: Vector<Rows, Scalar>) -> Self {
+    static func transposed(_ vector: Vector<rows, Scalar>) -> Self {
         .columnMatrix(vector)
     }
 }
 
 // MARK: Matrix 1xN
 @available(macOS 26.0.0, *)
-public extension Matrix where Rows == 1 {
+public extension Matrix where rows == 1 {
     /// 1xN matrix as a vector.
-    var asVector: Vector<Columns, Scalar> { vectors[0] }
+    var asVector: Vector<columns, Scalar> { vectors[0] }
     /// Creates a row vector matrix
     /// - Parameter vector: Vector to be used as the base.
     /// - Returns: 1xN matrix composed of `vector` components.
-    static func rowMatrix(_ vector: Vector<Columns, Scalar>) -> Self {
+    static func rowMatrix(_ vector: Vector<columns, Scalar>) -> Self {
         .init { vector[$0[0]] }
     }
 }
 
 @available(macOS 26.0.0, *)
-public extension Matrix where Rows == 1, Scalar: Numeric {
+public extension Matrix where rows == 1, Scalar: Numeric {
     /// Determinant in a single element or row matrix.
     var determinant: Scalar { self[r: 0, c: 0] }
 }
 
 // MARK: Matrix 2x2
 @available(macOS 26.0.0, *)
-public extension Matrix where Rows == 2, Columns == 2, Scalar: Numeric {
+public extension Matrix where rows == 2, columns == 2, Scalar: Numeric {
     /// Determinant in a 2x2 matrix.
     var determinant: Scalar {
         let a = self[r: 0, c: 0]
@@ -71,7 +71,7 @@ public extension Matrix where Rows == 2, Columns == 2, Scalar: Numeric {
 
 // MARK: Matrix 4x4
 @available(macOS 26.0.0, *)
-public extension Matrix where Rows == 4, Columns == 4, Scalar: Numeric {
+public extension Matrix where rows == 4, columns == 4, Scalar: Numeric {
     /// Creates a transform-rotation-scale matrix by combining it's matrices
     /// - Parameters:
     ///   - translate: Translation matrix.
@@ -120,7 +120,7 @@ public extension Matrix where Scalar: AdditiveArithmetic {
     /// - Parameter vector: Elements in the main diagonal.
     /// - Returns: Matrix with the given `vector` as it's diagonal.
     /// If the matrix is non-square, only fills values until the vector or diagonal ends, whichever comes first.
-    static func diagonalMatrix(_ vector: Vector<Rows, Scalar>) -> Self {
+    static func diagonalMatrix(_ vector: Vector<rows, Scalar>) -> Self {
         .init { $0.row == $0.column ? vector[$0.row] : .zero }
     }
 }
@@ -143,7 +143,7 @@ public extension Matrix where Scalar: Numeric {
     ///   - rhs: Another matrix
     ///
     /// - Returns: A new RxN matrix with the products of columns and rows.
-    static func * <let N: Int>(lhs: Self, rhs: Matrix<Columns, N, Scalar>) -> Matrix<Rows, N, Scalar> {
+    static func * <let N: Int>(lhs: Self, rhs: Matrix<columns, N, Scalar>) -> Matrix<rows, N, Scalar> {
         .init {
             let row = lhs[r: $0.row]
             let column = rhs[c: $0.column]

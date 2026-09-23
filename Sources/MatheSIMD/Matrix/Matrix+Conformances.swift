@@ -31,7 +31,7 @@ extension Matrix: Decodable where Scalar: Decodable {
     // swiftlint:disable:next missing_docs
     public init(from decoder: any Decoder) throws {
         var container = try decoder.unkeyedContainer()
-        vectors = try .init { _ in try container.decode(Vector<Columns, Scalar>.self) }
+        vectors = try .init { _ in try container.decode(Vector<columns, Scalar>.self) }
     }
 }
 
@@ -80,7 +80,7 @@ extension Matrix: Pointwise {
 @available(macOS 26.0, *)
 extension Matrix: SIMD where Scalar: SIMDScalar & AdditiveArithmetic {
     // swiftlint:disable:next missing_docs
-    public typealias MaskStorage = Matrix<Rows, Columns, Scalar.SIMDMaskScalar>
+    public typealias MaskStorage = Matrix<rows, columns, Scalar.SIMDMaskScalar>
 }
 
 // MARK: Self: SIMDStorage

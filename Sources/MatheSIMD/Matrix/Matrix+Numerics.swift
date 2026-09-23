@@ -19,10 +19,10 @@ public extension Matrix where Scalar: Numeric & ElementaryFunctions & AlgebraicF
 }
 
 @available(macOS 26.0.0, *)
-public extension Matrix where Rows == Columns, Scalar: Numeric & ElementaryFunctions & AlgebraicField {
+public extension Matrix where rows == columns, Scalar: Numeric & ElementaryFunctions & AlgebraicField {
     /// Determinant of a matrix.
     @_disfavoredOverload var determinant: Scalar {
-        let length = Rows
+        let length = rows
         var det: Scalar = 1
         var total: Scalar = 1
         var temp: [Scalar] = []
@@ -66,7 +66,7 @@ public extension Matrix where Rows == Columns, Scalar: Numeric & ElementaryFunct
 }
 
 @available(macOS 26.0.0, *)
-public extension Matrix where Rows == 4, Columns == 4, Scalar: Real {
+public extension Matrix where rows == 4, columns == 4, Scalar: Real {
     /// Creates a rotation matrix that represents a rotation in the X axis.
     /// - Parameter angle: Angle of the rotation.
     /// - Returns: A new rotation matrix.
