@@ -14,7 +14,7 @@ public protocol CoordinateSystem {
     /// Contains all components that describe a coordinate.
     associatedtype Components: Pointwise = DisplacementFor<Self>
     /// Type representing the numerical value used for one component.
-    associatedtype Scalar: AdditiveArithmetic = Double
+    typealias Scalar = Components.Scalar
     // MARK: Variables
     /// Displacement from the origin that uniquely describes this coordinate position.
     var components: Components { get }
@@ -26,7 +26,7 @@ public protocol CoordinateSystem {
 }
 
 // MARK: Default Implementation
-public extension CoordinateSystem where Self: Pointwise, Scalar == Components.Scalar, Scalar: AdditiveArithmetic {
+public extension CoordinateSystem where Self: Pointwise, Scalar: AdditiveArithmetic {
     // swiftlint:disable:next missing_docs
     func offset(by displacement: Components) -> Self {
         pointwise(displacement, merge: +)
