@@ -8,11 +8,13 @@
 public import MatheSIMD
 
 @available(macOS 26.0, *)
-public typealias Quaternion<let n: Int, Scalar: AdditiveArithmetic> = HomogeneousCoordinate<Vector<n, Scalar>>
+public typealias Quaternion<let n: Int, Scalar: AdditiveArithmetic> = HomogeneousCoordinate<CartesianCoordinate<n, Scalar>>
 /// Coordinate system that can represent any point on the projective plane without using infinity as a value.
 /// 
 /// Also known as a projective coordinate.
 public struct HomogeneousCoordinate<Base: CoordinateSystem> {
+    // swiftlint:disable:next missing_docs
+    public typealias Scalar = Base.Scalar
     // MARK: Variables
     /// Base coordinate used as the base of the projection.
     public var base: Base
@@ -33,13 +35,46 @@ public struct HomogeneousCoordinate<Base: CoordinateSystem> {
     }
 }
 
-// MARK: Self: CoordinateSystem
-extension HomogeneousCoordinate: CoordinateSystem {
+// MARK: Self.Components
+public extension HomogeneousCoordinate {
     // swiftlint:disable:next missing_docs
-    public typealias Scalar = Base.Scalar
+    struct Components {
+        var base: Base.Components
+        var w: Base.Scalar
+    }
 }
 
-// MARK: Self: Pointwise
+extension HomogeneousCoordinate.Components: Pointwise {
+    // swiftlint:disable:next missing_docs
+    public var scalarCount: Int { base.scalarCount + 1 }
+    // swiftlint:disable:next missing_docs
+    public subscript(index: Int) -> Base.Scalar {
+        get { index == base.scalarCount ? w : base[index] }
+        set {
+            if index == base.scalarCount {
+                w = newValue
+            } else {
+                base[index] = newValue
+            }
+        }
+    }
+    // swiftlint:disable:next missing_docs
+    public init(scalars: [Base.Scalar]) {
+        self.init(base: .init(scalars: scalars.dropLast()), w: scalars[scalars.count - 1])
+    }
+}
+
+// MARK: Self: CoordinateSystem
+extension HomogeneousCoordinate: CoordinateSystem where Base.Scalar: AdditiveArithmetic {
+    // swiftlint:disable:next missing_docs
+    public var components: Components { .init(base: base.components, w: w) }
+    // swiftlint:disable:next missing_docs
+    public func offset(by displacement: Components) -> HomogeneousCoordinate<Base> {
+        .init(base.offset(by: displacement.base), w: w + displacement.w)
+    }
+}
+
+// MARK: Self.Pointwise
 extension HomogeneousCoordinate: Pointwise where Base: Pointwise {
     // swiftlint:disable:next missing_docs
     public var scalarCount: Int { base.scalarCount + 1 }
@@ -56,7 +91,7 @@ extension HomogeneousCoordinate: Pointwise where Base: Pointwise {
     }
     // swiftlint:disable:next missing_docs
     public init(scalars: [Base.Scalar]) {
-        self = .homogeneous(Base(scalars: scalars.dropLast()), w: scalars[scalars.count - 1])
+        self.init(.init(scalars: scalars.dropLast()), w: scalars[scalars.count - 1])
     }
 }
 
@@ -79,21 +114,21 @@ public extension CoordinateSystem {
     ///   - w: Limit for the base coordinate.
     ///
     /// - Returns: A new homogeneous coordinate.
-    static func homogeneous<T>(_ base: T, w: Scalar) -> Self where Self == HomogeneousCoordinate<T> {
+    static func homogeneous<T: CoordinateSystem>(_ base: T, w: Scalar) -> Self where Self == HomogeneousCoordinate<T> {
         .init(base, w: w)
     }
 
     @available(macOS 26.0, *)
-    static func homogeneous<Scalar: AdditiveArithmetic>(
-        _ vector: Vector<4, Scalar>
-    ) -> Self where Self == HomogeneousCoordinate<Vector<3, Scalar>> {
-        .homogeneous([vector[0], vector[1], vector[2]], w: vector[3])
+    static func homogeneous<T: AdditiveArithmetic>(
+        _ vector: Vector<4, T>
+    ) -> Self where Self == HomogeneousCoordinate<CartesianCoordinate<3, T>> {
+        .init(.cartesian([vector[0], vector[1], vector[2]]), w: vector[3])
     }
 
     @available(macOS 26.0, *)
     static func identity<let dimensions: Int, Scalar: Numeric>() -> Self
-    where Self == HomogeneousCoordinate<Vector<dimensions, Scalar>> {
-        .homogeneous(atPlane: .repeating(.zero))
+    where Self == HomogeneousCoordinate<CartesianCoordinate<dimensions, Scalar>> {
+        .homogeneous(atPlane: .cartesian(.repeating(.zero)))
     }
 }
 
@@ -122,22 +157,22 @@ public import Numerics
 
 public extension HomogeneousCoordinate where Base: Pointwise {
     @available(macOS 26.0.0, *)
-    static func from<T: Real>(_ matrix: Matrix<3, 3, T>) -> Self where Base == Vector<3, T> {
+    static func from<T: Real>(_ matrix: Matrix<3, 3, T>) -> Self where Base == CartesianCoordinate<3, T> {
         let w: T = .sqrt(1 + matrix.diagonal.componentSum / 2)
         let w4 = w * 4
-
-        return .homogeneous(.init([
+        let coordinate = CartesianCoordinate<3, T>([
             (matrix[r: 2, c: 1] - matrix[r: 1, c: 2]) / w4,
             (matrix[r: 0, c: 2] - matrix[r: 2, c: 0]) / w4,
             (matrix[r: 1, c: 0] - matrix[r: 0, c: 1]) / w4
-        ]), w: w)
+        ])
+        return .init(coordinate, w: w)
     }
 
     @available(macOS 26.0, *)
     static func lookRotation<T: Real>(
         forward: Vector<3, T>,
         up: Vector<3, T> = .up
-    ) -> Self where Base == Vector<3, T> {
+    ) -> Self where Base == CartesianCoordinate<3, T> {
         let t = up.cross(forward).normalized
         let matrix = Matrix<3, 3, T>(.init([t, forward.cross(t).normalized, forward.normalized])).transposed
         return .from(matrix)
@@ -157,18 +192,18 @@ public extension HomogeneousCoordinate where Base: Pointwise, Scalar: Numeric & 
     var magnitude: Scalar { .root(dot(self), 2) }
 
     @available(macOS 26.0, *)
-    func conjugated<let n: Int, T>() -> Self where Base == Vector<n, T> {
-        self .* .homogeneous(atPlane: .repeating(-1))
+    func conjugated<let n: Int, T>() -> Self where Base == CartesianCoordinate<n, T> {
+        self .* .homogeneous(atPlane: .cartesian(.repeating(-1)))
     }
 
     @available(macOS 26.0, *)
-    static func euler<let n: Int, T: Real>(_ angles: Vector<n, T>) -> Self where Base == Vector<n, T> {
-        .homogeneous(atInfinity: angles)
+    static func euler<let n: Int, T: Real>(_ angles: Vector<n, T>) -> Self where Base == CartesianCoordinate<n, T> {
+        .homogeneous(atInfinity: .cartesian(angles))
     }
 
     @available(macOS 26.0, *)
-    static func from<let n: Int, T: Real>(axis: Vector<n, T>, angle: T) -> Self where Base == Vector<n, T> {
-        .homogeneous(atInfinity: axis * angle)
+    static func from<let n: Int, T: Real>(axis: Vector<n, T>, angle: T) -> Self where Base == CartesianCoordinate<n, T> {
+        .homogeneous(atInfinity: .cartesian(axis * angle))
     }
 }
 #else
