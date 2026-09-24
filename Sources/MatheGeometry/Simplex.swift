@@ -5,6 +5,7 @@
 //  Created by Martônio Júnior on 09/05/2026.
 //
 
+public import MatheCoordinates
 public import MatheRange
 public import MatheSIMD
 
@@ -20,8 +21,8 @@ public struct Simplex<let n: Int, Vertex> {
     // MARK: Variables
     /// Parameters used to define the triangle.
     var base: Vector<n, Vertex>
-    /// Value required to create the simplest possible triangle equivalent in D dimensions.
-    var end: Vertex
+    /// Value required to create the simplest possible simplex equivalent in D dimensions.
+    public var end: Vertex
     // MARK: Initializers
     /// Creates a new simplex.
     /// - Parameters:
@@ -32,6 +33,25 @@ public struct Simplex<let n: Int, Vertex> {
         self.base = base
         self.end = end
     }
+
+    @_disfavoredOverload
+    public static func ~= (lhs: Self, rhs: Vertex) -> Bool {
+        fatalError("Generic case not implemented yet.")
+    }
+}
+
+// MARK: Self: Boundary
+@available(macOS 26.0.0, *)
+extension Simplex: Boundary {
+    // swiftlint:disable:next missing_docs
+    public typealias Bound = Vertex
+}
+
+// MARK: Self: Geometric
+@available(macOS 26.0.0, *)
+extension Simplex: Geometric where Vertex: CoordinateSystem {
+    // swiftlint:disable:next missing_docs
+    public typealias Coordinate = Vertex
 }
 
 // MARK: Self: Polygon
