@@ -23,7 +23,67 @@ public extension CoordinateSystem {
 }
 
 // MARK: Self: CoordinateSystem
-extension CylindricalCoordinate: CoordinateSystem {}
+#if swift(>=6.2)
+@available(macOS 26.0, *)
+extension CylindricalCoordinate: CoordinateSystem {
+    // swiftlint:disable:next missing_docs
+    public typealias Components = Vector<3, Scalar>
+    // swiftlint:disable:next missing_docs
+    public var components: Components {
+        .init([radius, angle, height])
+    }
+    // swiftlint:disable:next missing_docs
+    public func offset(by displacement: Components) -> Self {
+        let base = components .+ displacement
+        return .init(radius: base[0], angle: base[1], height: base[2])
+    }
+}
+#else
+extension CylindricalCoordinate: CoordinateSystem {
+    // swiftlint:disable:next missing_docs
+    public typealias Components = DisplacementFor<Self>
+    // swiftlint:disable:next missing_docs
+    public var components: Components { .init(offset: self) }
+    // swiftlint:disable:next missing_docs
+    public func offset(by displacement: Components) -> Self {
+        .init(
+            radius: radius + displacement.offset.radius,
+            angle: angle + displacement.offset.angle,
+            height: height + displacement.offset.height
+        )
+    }
+}
+#endif
+
+// MARK: Self: Pointwise
+@available(macOS 26.0, *)
+extension CylindricalCoordinate: Pointwise {
+    // swiftlint:disable:next missing_docs
+    public var scalarCount: Int { 3 }
+    // swiftlint:disable:next missing_docs
+    public subscript(index: Int) -> Scalar {
+        get {
+            switch index {
+                case 0: radius
+                case 1: angle
+                case 2: height
+                default: fatalError("Invalid index accessed")
+            }
+        }
+        set {
+            switch index {
+                case 0: radius = newValue
+                case 1: angle = newValue
+                case 2: height = newValue
+                default: fatalError("Invalid index mutated")
+            }
+        }
+    }
+    // swiftlint:disable:next missing_docs
+    public init(scalars: [Scalar]) {
+        self.init(radius: scalars[0], angle: scalars[1], height: scalars[2])
+    }
+}
 
 // MARK: CoordinateSystem (EX)
 public extension CoordinateSystem {
