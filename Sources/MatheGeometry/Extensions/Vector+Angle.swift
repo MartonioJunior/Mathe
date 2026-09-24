@@ -14,7 +14,7 @@ public import Numerics
 public extension Vector where Scalar: Real & Comparable {
     @_disfavoredOverload
     func cross(_ rhs: Self) -> Scalar {
-        magnitude * rhs.magnitude * .sin(Vector.angle(from: self, to: rhs))
+        magnitude * rhs.magnitude * .sin(Self.angle(from: self, to: rhs))
     }
 
     /// Returns an angle in radians between two vectors
