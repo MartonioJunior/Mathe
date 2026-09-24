@@ -56,7 +56,6 @@ extension CylindricalCoordinate: CoordinateSystem {
 #endif
 
 // MARK: Self: Pointwise
-@available(macOS 26.0, *)
 extension CylindricalCoordinate: Pointwise {
     // swiftlint:disable:next missing_docs
     public var scalarCount: Int { 3 }
