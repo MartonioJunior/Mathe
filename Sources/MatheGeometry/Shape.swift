@@ -25,7 +25,7 @@ public protocol Shape: Geometric {
 }
 
 // MARK: Self.Coordinate.Scalar: Comparable
-public extension Shape where Coordinate.Scalar: Comparable {
+public extension Shape where Coordinate.Scalar: AdditiveArithmetic & Comparable {
     /// Checks whether a point is inside or outside of the shape.
     /// - Parameter point: Coordinate to compare.
     /// - Returns: `.inside` when point is part of the shape, `.outside` when it's not.
