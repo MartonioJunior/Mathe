@@ -11,7 +11,7 @@ import MatheRange
 public import MatheSIMD
 public import Numerics
 
-/// Data structure that represents a N-dimensional plane/
+/// Data structure that represents a N-dimensional plane
 @available(macOS 26.0.0, *)
 public struct Plane<let n: Int, Scalar: AlgebraicField & Comparable & ElementaryFunctions> {
     // MARK: Variables
