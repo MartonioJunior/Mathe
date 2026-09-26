@@ -25,8 +25,10 @@ public protocol CoordinateSystem {
     func offset(by displacement: Components) -> Self
 }
 
-// MARK: Default Implementation
+// MARK: Self: Pointwise
 public extension CoordinateSystem where Self: Pointwise, Scalar: AdditiveArithmetic {
+    /// Origin of the coordinate system.
+    static var origin: Self { .init(scalars: []) }
     // swiftlint:disable:next missing_docs
     func offset(by displacement: Components) -> Self {
         pointwise(displacement, merge: +)
