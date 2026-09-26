@@ -7,7 +7,7 @@
 
 public import MatheRange
 
-/// Plane figure made up of line segments that connect to form a closed chain.
+/// Plane figure made up of line segments that connect together to form a closed chain.
 public protocol Polygon {
     /// Storage containing all the lines that form a polygon.
     associatedtype Edges: Collection where Edges.Element == Extent<Vertices.Element>
@@ -21,5 +21,8 @@ public protocol Polygon {
 
 // MARK: Shape (EX)
 public extension Polygon where Self: Shape {
+    /// Polygons are, by definition, closed chains.
+    /// 
+    /// Therefore, this property always returns `true`
     var isClosed: Bool { true }
 }
