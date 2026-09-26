@@ -23,6 +23,12 @@ public protocol Shape: Geometric {
     func outline(t: OutlineParameter) -> Coordinate
 }
 
+// MARK: Default Implementation
+public extension Shape {
+    // swiftlint:disable:next missing_docs
+    var isClosed: Bool { true }
+}
+
 // MARK: Self.OutlineParameter == Never
 public extension Shape where OutlineParameter == Never {
     /// Defines a position in the shape's outline based on a parameter `t`.
