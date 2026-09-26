@@ -7,8 +7,8 @@
 
 /// Data structure representing an intersection between two boundaries `A` and `B`.
 public struct Intersection<A: Boundary, B: Boundary> where A.Bound == B.Bound {
-    var left: A
-    var right: B
+    public var left: A
+    public var right: B
 
     var swapped: Intersection<B, A> {
         .init(left: right, right: left)
