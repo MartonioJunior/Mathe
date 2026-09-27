@@ -117,7 +117,7 @@ extension CellShaped.ByExtent: Polygon {
 
 // MARK: Self: Shape
 @available(macOS 26.0.0, *)
-extension CellShaped.ByExtent: Shape where Scalar: Comparable {
+extension CellShaped.ByExtent: Shape {
     // swiftlint:disable:next missing_docs
     public func isOutline(for point: Coordinate) -> Bool {
         point.pointwise(max, as: Vector<n, Bool>.self, merge: ==).any
