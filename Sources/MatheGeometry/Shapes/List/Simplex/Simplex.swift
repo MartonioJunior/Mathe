@@ -40,6 +40,17 @@ public struct Simplex<let n: Int, Vertex> {
     }
 }
 
+// MARK: DotSyntax
+@available(macOS 26.0.0, *)
+public extension Simplex {
+    static func fromVertices(_ vertices: [Vertex], offset: Int) -> Self {
+        let scalars = (offset...offset + n).map {
+            vertices[$0 % vertices.count]
+        }
+        return Simplex(.init(scalars: scalars.dropLast()), end: scalars[n])
+    }
+}
+
 // MARK: Self: Boundary
 @available(macOS 26.0.0, *)
 extension Simplex: Boundary {
