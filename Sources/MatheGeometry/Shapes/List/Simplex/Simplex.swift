@@ -75,7 +75,9 @@ extension Simplex: Polygon {
     // swiftlint:disable:next missing_docs
     public var edges: Edges {
         vertices.enumerated().flatMap { entry in
-            ((entry.offset + 1)...(n)).map { index in
+            guard entry.offset < n else { return [Extent<Vertex>]() }
+
+            return ((entry.offset + 1)...(n)).map { index in
                 Extent(from: entry.element, to: vertices[index])
             }
         }
