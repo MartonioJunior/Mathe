@@ -48,7 +48,7 @@ struct SimplexTests {
             }
 
             if #available(macOS 26, *) {
-                let sut = Simplex<2, Int>(.init([1, 2, 3]), end: 4)
+                let sut = Simplex<3, Int>(.init([1, 2, 3]), end: 4)
                 let expected = [1, 2, 3, 4]
                 #expect(sut.vertices.elementsEqual(expected))
             }
